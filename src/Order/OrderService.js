@@ -46,6 +46,7 @@ const CreateOrderServ = async (dataOrder) => {
         : [{ idSosmed: dataOrder.OrderSosmed }],
     };
   }
+  
   if (dataOrder.OrderArtikel) {
     data.OrderArtikel = {
       create: {
@@ -54,6 +55,7 @@ const CreateOrderServ = async (dataOrder) => {
       },
     };
   }
+
   if (dataOrder.pay_type === "cash") {
     data.payCash = {
       create: {
@@ -74,6 +76,7 @@ const CreateOrderServ = async (dataOrder) => {
       },
     };
   }
+
   if (dataOrder.pay_type === "semi_barter") {
     data.semiBarter = {
       create: {
@@ -86,6 +89,7 @@ const CreateOrderServ = async (dataOrder) => {
       },
     };
   }
+
   if (dataOrder.pay_type === "kredit") {
     data.kredit = {
       create: {
@@ -95,6 +99,7 @@ const CreateOrderServ = async (dataOrder) => {
       },
     };
   }
+
   if (dataOrder.pay_type === "termin") {
     data.termin = {
       create: {
