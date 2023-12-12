@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  role_id  String
+  role     Role   @relation(fields: [role_id], references: [id])
+}
+
+model Role {
+  id          String @id @default(cuid())
+  role        String
+  number_role Int
+  user        User[]
+}
+
+model Custs {
+  id               String    @id @default(cuid())
+  name             String
+  type             String
+  contact          String?
+  contact_phone    String?
+  email            String?
+  npwp             String?
+  address          String?
+  fincontact       String?
+  fincontact_phone String?
+  img_logo         String
+  img_akta         String
+  img_nib          String
+  img_npwp         String
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime? @updatedAt
+  order            Order[]
+}
+
+model Order {
+  id              String          @id @default(cuid())
+  idCust          String
+  SalesType       String?
+  camp_name       String?
+  order_no        String?
+  order_date      String?
+  mtPikiranRakyat Boolean?
+  period_start    DateTime?
+  period_end      DateTime?
+  pay_type        String?
+  createdAt       DateTime?       @default(now())
+  updatedAt       DateTime?       @updatedAt
+  costumer        Custs           @relation(fields: [idCust], references: [id])
+  OrderNetwork    OrderNetwork[]
+  OrderMitra      OrderMitra[]
+  OrderArtikel    OrderArtikel[]
+  OrderSosmed     OrderSosmed[]
+  payCash         payCash[]
+  barter          payBarter[]
+  semiBarter      paySemiBarter[]
+  kredit          payKredit[]
+  termin          payTermin[]
+}
+
+model Network {
+  id           String         @id @default(cuid())
+  name         String
+  OrderNetwork OrderNetwork[]
+}
+
+model Mitra {
+  id         String       @id @default(cuid())
+  name       String
+  OrderMitra OrderMitra[]
+}
+
+model Sosmed {
+  id          String        @id @default(cuid())
+  name        String
+  OrderSosmed OrderSosmed[]
+}
+
+model OrderNetwork {
+  idOrder   String
+  idNetwork String
+  order     Order?   @relation(fields: [idOrder], references: [id])
+  network   Network? @relation(fields: [idNetwork], references: [id])
+
+  @@id([idOrder, idNetwork])
+}
+
+model OrderMitra {
+  idOrder String
+  idMitra String
+  order   Order? @relation(fields: [idOrder], references: [id])
+  mitra   Mitra? @relation(fields: [idMitra], references: [id])
+
+  @@id([idMitra, idOrder])
+}
+
+model OrderArtikel {
+  idOrder   String
+  Artikel_1 Int?
+  Artikel_2 Int?
+  order     Order  @relation(fields: [idOrder], references: [id])
+
+  @@id([idOrder])
+}
+
+model OrderSosmed {
+  idOrder  String
+  idSosmed String
+  order    Order?  @relation(fields: [idOrder], references: [id])
+  sosmed   Sosmed? @relation(fields: [idSosmed], references: [id])
+
+  @@id([idOrder, idSosmed])
+}
+
+model payCash {
+  idOrder String
+  order   Order?   @relation(fields: [idOrder], references: [id])
+  total   Int
+  tempo   DateTime
+  diskon  Int?
+
+  @@id([idOrder])
+}
+
+model payBarter {
+  idOrder String
+  order   Order?    @relation(fields: [idOrder], references: [id])
+  nilai   Int
+  barang  String?
+  tempo   DateTime?
+  diskon  Int?
+
+  @@id([idOrder])
+}
+
+model paySemiBarter {
+  idOrder     String
+  order       Order?   @relation(fields: [idOrder], references: [id])
+  nilaiBarter Int
+  tempoBarter DateTime
+  nilaiCash   Int
+  tempoCash   DateTime
+  itemBarang  String
+  diskon      Int?
+
+  @@id([idOrder])
+}
+
+model payKredit {
+  idOrder     String
+  order       Order?   @relation(fields: [idOrder], references: [id])
+  nilaiKredit Int
+  tempo       DateTime
+  diskon      Int?
+
+  @@id([idOrder])
+}
+
+model payTermin {
+  idOrder  String
+  order    Order?   @relation(fields: [idOrder], references: [id])
+  termin_1 Int
+  tempo_1  DateTime
+  termin_2 Int
+  tempo_2  DateTime
+  termin_3 Int
+  tempo_3  DateTime
+  diskon   Int?
+
+  @@id([idOrder])
+}
