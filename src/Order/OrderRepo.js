@@ -27,4 +27,103 @@ const CreateOrderRepo = async (dataOrder) => {
   }
 };
 
-module.exports = { GetMediaTayang, CreateOrderRepo };
+const CreateNetworkRepo = async (name) => {
+  return await prisma.network.create({
+    data: {
+      name,
+    },
+  });
+};
+
+const GetNetworkByIdRepo = async (id) => {
+  return prisma.network.findUnique({
+    where: {
+      id
+    }
+  })
+}
+
+const CreateMitraRepo = async (name) => {
+  return await prisma.mitra.create({
+    data: {
+      name,
+    },
+  });
+};
+
+const GetMitraByIdRepo = async (id) => {
+  return prisma.mitra.findUnique({
+    where: {
+      id
+    }
+  })
+}
+
+const CreateSosmedRepo = async (name) => {
+  return await prisma.sosmed.create({
+    data: {
+      name,
+    },
+  });
+};
+
+const GetSosmedByIdRepo = async (id) => {
+  return prisma.sosmed.findUnique({
+    where: {
+      id
+    }
+  })
+}
+
+
+const GetAllOrderRepo = async () => {
+  return await prisma.order.findMany({
+    include: {
+      costumer: true,
+      OrderNetwork: true,
+      OrderMitra: true,
+      OrderArtikel: true,
+      OrderSosmed: true,
+      payCash: true,
+      barter: true,
+      semiBarter: true,
+      kredit: true,
+      termin: true
+
+    }
+  })
+}
+
+const GetOrderByIdRepo = async (id) => {
+  return await prisma.order.findUnique({
+    where: {
+      id
+    },
+    include: {
+      costumer: true,
+      OrderNetwork: true,
+      OrderMitra: true,
+      OrderArtikel: true,
+      OrderSosmed: true,
+      payCash: true,
+      barter: true,
+      semiBarter: true,
+      kredit: true,
+      termin: true
+
+    }
+  })
+}
+
+module.exports = {
+  GetMediaTayang,
+  CreateOrderRepo,
+  CreateNetworkRepo,
+  CreateMitraRepo,
+  CreateSosmedRepo,
+  GetAllOrderRepo,
+  GetNetworkByIdRepo,
+  GetMitraByIdRepo,
+  GetSosmedByIdRepo,
+  GetOrderByIdRepo
+};

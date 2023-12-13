@@ -1,4 +1,15 @@
-const { GetMediaTayang, CreateOrderRepo } = require("./OrderRepo");
+const {
+  GetMediaTayang,
+  CreateOrderRepo,
+  CreateNetworkRepo,
+  CreateMitraRepo,
+  CreateSosmedRepo,
+  GetAllOrderRepo,
+  GetNetworkByIdRepo,
+  GetMitraByIdRepo,
+  GetSosmedByIdRepo,
+  GetOrderByIdRepo,
+} = require("./OrderRepo");
 
 const GetMediaTayangServ = async () => {
   return await GetMediaTayang();
@@ -21,8 +32,8 @@ const CreateOrderServ = async (dataOrder) => {
     data.OrderNetwork = {
       create: Array.isArray(dataOrder.OrderNetwork)
         ? dataOrder.OrderNetwork.map((idNetwork) => ({
-            idNetwork,
-          }))
+          idNetwork,
+        }))
         : [{ idNetwork: dataOrder.OrderNetwork }],
     };
   }
@@ -31,8 +42,8 @@ const CreateOrderServ = async (dataOrder) => {
     data.OrderMitra = {
       create: Array.isArray(dataOrder.OrderMitra)
         ? dataOrder.OrderMitra.map((idMitra) => ({
-            idMitra,
-          }))
+          idMitra,
+        }))
         : [{ idMitra: dataOrder.OrderMitra }],
     };
   }
@@ -41,12 +52,12 @@ const CreateOrderServ = async (dataOrder) => {
     data.OrderSosmed = {
       create: Array.isArray(dataOrder.OrderSosmed)
         ? dataOrder.OrderSosmed.map((idSosmed) => ({
-            idSosmed,
-          }))
+          idSosmed,
+        }))
         : [{ idSosmed: dataOrder.OrderSosmed }],
     };
   }
-  
+
   if (dataOrder.OrderArtikel) {
     data.OrderArtikel = {
       create: {
@@ -118,4 +129,134 @@ const CreateOrderServ = async (dataOrder) => {
   return order;
 };
 
-module.exports = { GetMediaTayangServ, CreateOrderServ };
+const CreateNetworkServ = async (name) => {
+  return await CreateNetworkRepo(name);
+};
+
+const CreateMitraServ = async (name) => {
+  return await CreateMitraRepo(name);
+};
+const CreateSosmedServ = async (name) => {
+  return await CreateSosmedRepo(name);
+};
+
+const GetallOrderServ = async () => {
+  const order = await GetAllOrderRepo();
+  const orderResponse = await Promise.all(
+    order.map(async (item) => {
+      const network = await Promise.all(
+        item.OrderNetwork.map(async (NetItem) => {
+          return await GetNetworkByIdRepo(NetItem.idNetwork);
+        })
+      );
+
+      const mitra = await Promise.all(
+        item.OrderMitra.map(async (MitItem) => {
+          return await GetMitraByIdRepo(MitItem.idMitra);
+        })
+      );
+
+      const sosmed = await Promise.all(
+        item.OrderSosmed.map(async (SosItem) => {
+          return await GetSosmedByIdRepo(SosItem.idSosmed);
+        })
+      );
+
+      return {
+        idOrder: item.id,
+        SalesType: item.SalesType,
+        camp_name: item.camp_name,
+        order_no: item.order_no,
+        order_date: item.order_date,
+        period_start: item.period_start,
+        period_end: item.period_end,
+        pay_type: item.pay_type,
+        customer: {
+          id: item.costumer.id,
+          name: item.costumer.name,
+        },
+        mediaTayang: {
+          ...(item.mtPikiranRakyat
+            ? { pikiranRakyat: item.mtPikiranRakyat }
+            : {}),
+          ...(sosmed.length ? { sosmed: sosmed } : {}),
+          ...(network.length ? { network: network } : {}),
+          ...(mitra.length ? { mitra: mitra } : {}),
+          ...(item.OrderArtikel.length ? { artikel: item.OrderArtikel } : {}),
+        },
+        payment: {
+          ...(item.payCash.length ? { cash: item.payCash } : {}),
+          ...(item.barter.length ? { barter: item.barter } : {}),
+          ...(item.kredit.length ? { kredit: item.kredit } : {}),
+          ...(item.semiBarter.length ? { semi_barter: item.semiBarter } : {}),
+          ...(item.termin.length ? { termin: item.termin } : {}),
+        },
+      };
+    })
+  );
+  
+  return orderResponse;
+};
+
+const GetorderByIdServ = async (id) => {
+  const order = await GetOrderByIdRepo(id);
+
+  const network = await Promise.all(
+    order.OrderNetwork.map(async (NetItem) => {
+      return await GetNetworkByIdRepo(NetItem.idNetwork);
+    })
+  );
+
+  const mitra = await Promise.all(
+    order.OrderMitra.map(async (MitItem) => {
+      return await GetMitraByIdRepo(MitItem.idMitra);
+    })
+  );
+
+  const sosmed = await Promise.all(
+    order.OrderSosmed.map(async (SosItem) => {
+      return await GetSosmedByIdRepo(SosItem.idSosmed);
+    })
+  );
+
+  return {
+    idOrder: order.id,
+    SalesType: order.SalesType,
+    camp_name: order.camp_name,
+    order_no: order.order_no,
+    order_date: order.order_date,
+    period_start: order.period_start,
+    period_end: order.period_end,
+    pay_type: order.pay_type,
+    customer: {
+      id: order.costumer.id,
+      name: order.costumer.name,
+    },
+    mediaTayang: {
+      ...(order.mtPikiranRakyat
+        ? { pikiranRakyat: order.mtPikiranRakyat }
+        : {}),
+      ...(network.length ? { network: network } : {}),
+      ...(sosmed.length ? { sosmed: sosmed } : {}),
+      ...(mitra.length ? { mitra: mitra } : {}),
+      ...(order.OrderArtikel.length ? { artikel: order.OrderArtikel } : {}),
+    },
+    payment: {
+      ...(order.payCash.length ? { cash: order.payCash } : {}),
+      ...(order.barter.length ? { barter: order.barter } : {}),
+      ...(order.kredit.length ? { kredit: order.kredit } : {}),
+      ...(order.semiBarter.length ? { semi_barter: order.semiBarter } : {}),
+      ...(order.termin.length ? { termin: order.termin } : {}),
+    },
+  };
+};
+
+module.exports = {
+  GetMediaTayangServ,
+  CreateOrderServ,
+  CreateNetworkServ,
+  CreateMitraServ,
+  CreateSosmedServ,
+  GetallOrderServ,
+  GetorderByIdServ,
+};
