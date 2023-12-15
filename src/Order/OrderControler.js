@@ -14,7 +14,7 @@ router.get("/", AuthAll, async (req, res) => {
   }
 });
 
-router.post("/new", AuthAll, async (req, res) => {
+router.post("/new",  async (req, res) => {
   const {
     idCust,
     SalesType,
