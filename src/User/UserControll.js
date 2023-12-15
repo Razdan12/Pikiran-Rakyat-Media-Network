@@ -35,7 +35,7 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const response = await LoginUser(email, password)
-    return res.status(200).json(response);
+    return res.status(response.status).json(response.data);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });

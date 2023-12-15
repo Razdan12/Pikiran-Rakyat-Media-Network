@@ -76,8 +76,10 @@ const GetSosmedByIdRepo = async (id) => {
 }
 
 
-const GetAllOrderRepo = async () => {
+const GetAllOrderRepo = async (pageNumber, pageSize) => {
   return await prisma.order.findMany({
+    skip: (pageNumber - 1) * pageSize,
+    take: pageSize,
     include: {
       costumer: true,
       OrderNetwork: true,
@@ -88,8 +90,8 @@ const GetAllOrderRepo = async () => {
       barter: true,
       semiBarter: true,
       kredit: true,
-      termin: true
-
+      termin: true,
+      deposit: true
     }
   })
 }

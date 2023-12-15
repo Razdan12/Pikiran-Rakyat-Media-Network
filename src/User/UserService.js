@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { createUserRepo, Login } = require("./UserRepo");
+const { Response } = require("../config/Response");
 
 dotenv.config();
 
@@ -30,29 +31,31 @@ const createUserServ = async (data) => {
 
 const LoginUser = async (email, password) => {
   const user = await Login(email);
-  console.log(user);
+ 
   if (!user) {
-    return "invalid email";
+    return Response(404, '' , "email invalid");
   }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
-    return "invalid password";
+    return Response(404, '' , "password invalid");
   }
 
   const token = jwt.sign(
-    { namaUser: user.name, id: user.id, role_id: user.role.number_role },
+    { namaUser: user.name, id: user.id, role: user.role.number_role },
     secretKey,
     { expiresIn: "1d" }
   );
 
-  return {
+ const data = {
     name: user.name,
     uuid: user.id,
     role: user.role.role,
+    email: user.email,
     role_number: user.role.number_role,
     accessToken: token,
   };
+  return Response(200, data , "email invalid");
 };
 
 module.exports = { createUserServ, LoginUser };

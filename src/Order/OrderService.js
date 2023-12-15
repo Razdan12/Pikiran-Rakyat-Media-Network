@@ -1,3 +1,5 @@
+const { getCustomerByIdServ } = require("../Cutomer/CustService");
+const { Response } = require("../config/Response");
 const {
   GetMediaTayang,
   CreateOrderRepo,
@@ -16,117 +18,132 @@ const GetMediaTayangServ = async () => {
 };
 
 const CreateOrderServ = async (dataOrder) => {
-  const data = {
-    idCust: dataOrder.idCust,
-    SalesType: dataOrder.SalesType,
-    camp_name: dataOrder.camp_name,
-    order_no: dataOrder.order_no,
-    order_date: dataOrder.order_date,
-    mtPikiranRakyat: dataOrder.mtPikiranRakyat,
-    period_start: dataOrder.period_start,
-    period_end: dataOrder.period_end,
-    pay_type: dataOrder.pay_type,
-  };
+  const customer = await getCustomerByIdServ(dataOrder.idCust);
 
-  if (dataOrder.OrderNetwork) {
-    data.OrderNetwork = {
-      create: Array.isArray(dataOrder.OrderNetwork)
-        ? dataOrder.OrderNetwork.map((idNetwork) => ({
-          idNetwork,
-        }))
-        : [{ idNetwork: dataOrder.OrderNetwork }],
+  if (customer != 'data notfound') {
+    const data = {
+      idCust: dataOrder.idCust,
+      SalesType: dataOrder.SalesType,
+      camp_name: dataOrder.camp_name,
+      order_no: dataOrder.order_no,
+      order_date: dataOrder.order_date,
+      mtPikiranRakyat: dataOrder.mtPikiranRakyat,
+      period_start: dataOrder.period_start,
+      period_end: dataOrder.period_end,
+      pay_type: dataOrder.pay_type,
     };
-  }
 
-  if (dataOrder.OrderMitra) {
-    data.OrderMitra = {
-      create: Array.isArray(dataOrder.OrderMitra)
-        ? dataOrder.OrderMitra.map((idMitra) => ({
-          idMitra,
-        }))
-        : [{ idMitra: dataOrder.OrderMitra }],
-    };
-  }
+    if (dataOrder.OrderNetwork) {
+      data.OrderNetwork = {
+        create: Array.isArray(dataOrder.OrderNetwork)
+          ? dataOrder.OrderNetwork.map((idNetwork) => ({
+            idNetwork,
+          }))
+          : [{ idNetwork: dataOrder.OrderNetwork }],
+      };
+    }
 
-  if (dataOrder.OrderSosmed) {
-    data.OrderSosmed = {
-      create: Array.isArray(dataOrder.OrderSosmed)
-        ? dataOrder.OrderSosmed.map((idSosmed) => ({
-          idSosmed,
-        }))
-        : [{ idSosmed: dataOrder.OrderSosmed }],
-    };
-  }
+    if (dataOrder.OrderMitra) {
+      data.OrderMitra = {
+        create: Array.isArray(dataOrder.OrderMitra)
+          ? dataOrder.OrderMitra.map((idMitra) => ({
+            idMitra,
+          }))
+          : [{ idMitra: dataOrder.OrderMitra }],
+      };
+    }
 
-  if (dataOrder.OrderArtikel) {
-    data.OrderArtikel = {
-      create: {
-        Artikel_1: dataOrder.OrderArtikel.artikel_1,
-        Artikel_2: dataOrder.OrderArtikel.artikel_2,
-      },
-    };
-  }
+    if (dataOrder.OrderSosmed) {
+      data.OrderSosmed = {
+        create: Array.isArray(dataOrder.OrderSosmed)
+          ? dataOrder.OrderSosmed.map((idSosmed) => ({
+            idSosmed,
+          }))
+          : [{ idSosmed: dataOrder.OrderSosmed }],
+      };
+    }
 
-  if (dataOrder.pay_type === "cash") {
-    data.payCash = {
-      create: {
-        total: dataOrder.payment.total,
-        tempo: dataOrder.payment.tempo,
-        diskon: dataOrder.payment.diskon,
-      },
-    };
-  }
+    if (dataOrder.OrderArtikel) {
+      data.OrderArtikel = {
+        create: {
+          Artikel_1: dataOrder.OrderArtikel.artikel_1,
+          Artikel_2: dataOrder.OrderArtikel.artikel_2,
+        },
+      };
+    }
 
-  if (dataOrder.pay_type === "barter") {
-    data.barter = {
-      create: {
-        nilai: dataOrder.payment.nilaiBarter,
-        tempo: dataOrder.payment.tempo,
-        diskon: dataOrder.payment.diskon,
-        barang: dataOrder.payment.barang,
-      },
-    };
-  }
+    if (dataOrder.pay_type === "cash") {
+      data.payCash = {
+        create: {
+          total: dataOrder.payment.total,
+          tempo: dataOrder.payment.tempo,
+          diskon: dataOrder.payment.diskon,
+        },
+      };
+    }
 
-  if (dataOrder.pay_type === "semi_barter") {
-    data.semiBarter = {
-      create: {
-        nilaiBarter: dataOrder.payment.nilaiBarter,
-        tempoBarter: dataOrder.payment.tempoBarter,
-        diskon: dataOrder.payment.diskon,
-        nilaiCash: dataOrder.payment.nilaiCash,
-        tempoCash: dataOrder.payment.tempoCash,
-        itemBarang: dataOrder.payment.itemBarang,
-      },
-    };
-  }
+    if (dataOrder.pay_type === "barter") {
+      data.barter = {
+        create: {
+          nilai: dataOrder.payment.nilaiBarter,
+          tempo: dataOrder.payment.tempo,
+          diskon: dataOrder.payment.diskon,
+          barang: dataOrder.payment.barang,
+        },
+      };
+    }
 
-  if (dataOrder.pay_type === "kredit") {
-    data.kredit = {
-      create: {
-        nilaiKredit: dataOrder.payment.nilaiKredit,
-        tempo: dataOrder.payment.tempoKredit,
-        diskon: dataOrder.payment.diskon,
-      },
-    };
-  }
+    if (dataOrder.pay_type === "semi_barter") {
+      data.semiBarter = {
+        create: {
+          nilaiBarter: dataOrder.payment.nilaiBarter,
+          tempoBarter: dataOrder.payment.tempoBarter,
+          diskon: dataOrder.payment.diskon,
+          nilaiCash: dataOrder.payment.nilaiCash,
+          tempoCash: dataOrder.payment.tempoCash,
+          itemBarang: dataOrder.payment.itemBarang,
+        },
+      };
+    }
 
-  if (dataOrder.pay_type === "termin") {
-    data.termin = {
-      create: {
-        termin_1: dataOrder.payment.termin_1,
-        tempo_1: dataOrder.payment.tempo_1,
-        termin_2: dataOrder.payment.termin_2,
-        tempo_2: dataOrder.payment.tempo_2,
-        termin_3: dataOrder.payment.termin_3,
-        tempo_3: dataOrder.payment.tempo_3,
-        diskon: dataOrder.payment.diskon,
-      },
-    };
-  }
+    if (dataOrder.pay_type === "kredit") {
+      data.kredit = {
+        create: {
+          nilaiKredit: dataOrder.payment.nilaiKredit,
+          tempo: dataOrder.payment.tempoKredit,
+          diskon: dataOrder.payment.diskon,
+        },
+      };
+    }
 
-  const order = await CreateOrderRepo(data);
-  return order;
+    if (dataOrder.pay_type === "termin") {
+      data.termin = {
+        create: {
+          termin_1: dataOrder.payment.termin_1,
+          tempo_1: dataOrder.payment.tempo_1,
+          termin_2: dataOrder.payment.termin_2,
+          tempo_2: dataOrder.payment.tempo_2,
+          termin_3: dataOrder.payment.termin_3,
+          tempo_3: dataOrder.payment.tempo_3,
+          diskon: dataOrder.payment.diskon,
+        },
+      };
+    }
+    if (dataOrder.pay_type === "deposit"){
+      data.deposit = {
+        create: {
+          totalDeposit : dataOrder.payment.deposit,
+          minDeposit: dataOrder.payment.minDeposit,
+          status: 'aktif'
+        }
+      }
+    }
+
+    const order = await CreateOrderRepo(data);
+    return Response(200, order, "sukses");
+  } else {
+    return Response(404, '', "customer tidak ditemukan ");
+  }
 };
 
 const CreateNetworkServ = async (name) => {
@@ -140,10 +157,12 @@ const CreateSosmedServ = async (name) => {
   return await CreateSosmedRepo(name);
 };
 
-const GetallOrderServ = async () => {
-  const order = await GetAllOrderRepo();
+const GetallOrderServ = async (pageNumber, pageSize) => {
+  const order = await GetAllOrderRepo(pageNumber, pageSize);
+
   const orderResponse = await Promise.all(
     order.map(async (item) => {
+     
       const network = await Promise.all(
         item.OrderNetwork.map(async (NetItem) => {
           return await GetNetworkByIdRepo(NetItem.idNetwork);
@@ -190,12 +209,21 @@ const GetallOrderServ = async () => {
           ...(item.kredit.length ? { kredit: item.kredit } : {}),
           ...(item.semiBarter.length ? { semi_barter: item.semiBarter } : {}),
           ...(item.termin.length ? { termin: item.termin } : {}),
+          ...(item.deposit.length ? { deposit: item.deposit } : {}),
         },
+
       };
+
     })
   );
-  
-  return orderResponse;
+
+  const data = {
+    totalData: order.length,
+    pageNumber: pageNumber,
+    dataOrder: orderResponse
+  }
+
+  return data;
 };
 
 const GetorderByIdServ = async (id) => {
@@ -233,14 +261,13 @@ const GetorderByIdServ = async (id) => {
       name: order.costumer.name,
     },
     mediaTayang: {
-      ...(order.mtPikiranRakyat
-        ? { pikiranRakyat: order.mtPikiranRakyat }
-        : {}),
+      ...(order.mtPikiranRakyat ? { pikiranRakyat: order.mtPikiranRakyat } : {}),
       ...(network.length ? { network: network } : {}),
       ...(sosmed.length ? { sosmed: sosmed } : {}),
       ...(mitra.length ? { mitra: mitra } : {}),
       ...(order.OrderArtikel.length ? { artikel: order.OrderArtikel } : {}),
     },
+    
     payment: {
       ...(order.payCash.length ? { cash: order.payCash } : {}),
       ...(order.barter.length ? { barter: order.barter } : {}),

@@ -3,11 +3,12 @@ const upload = require("../config/Multer");
 const router = express.Router();
 const dotenv = require("dotenv");
 const { createCustomerServ, getCustomerServ, getCustomerByIdServ } = require("./CustService");
+const { AuthAll } = require("../config/Auth");
 dotenv.config();
 
 const base_url = process.env.BASE_URL;
 
-router.post("/add", upload.array("files"), async (req, res) => {
+router.post("/add", upload.array("files"), AuthAll, async (req, res) => {
   const dataFile = req.files;
 
   const {
@@ -45,7 +46,7 @@ router.post("/add", upload.array("files"), async (req, res) => {
   res.status(200).json(response);
 });
 
-router.get("/all", async (req, res) => {
+router.get("/all", AuthAll, async (req, res) => {
   try {
     const response = await getCustomerServ();
     res.status(200).json(response);
@@ -54,7 +55,7 @@ router.get("/all", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", AuthAll, async (req, res) => {
     const id = req.params.id
    
     try {

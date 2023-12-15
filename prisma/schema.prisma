@@ -37,10 +37,10 @@ model Custs {
   address          String?
   fincontact       String?
   fincontact_phone String?
-  img_logo         String
-  img_akta         String
-  img_nib          String
-  img_npwp         String
+  img_logo         String?
+  img_akta         String?
+  img_nib          String?
+  img_npwp         String?
   createdAt        DateTime? @default(now())
   updatedAt        DateTime? @updatedAt
   order            Order[]
@@ -69,6 +69,7 @@ model Order {
   semiBarter      paySemiBarter[]
   kredit          payKredit[]
   termin          payTermin[]
+  deposit         payDeposit[]
 }
 
 model Network {
@@ -179,6 +180,16 @@ model payTermin {
   termin_3 Int
   tempo_3  DateTime
   diskon   Int?
+
+  @@id([idOrder])
+}
+
+model payDeposit {
+  idOrder      String
+  order        Order? @relation(fields: [idOrder], references: [id])
+  totalDeposit Int
+  minDeposit   Int
+  status       String
 
   @@id([idOrder])
 }

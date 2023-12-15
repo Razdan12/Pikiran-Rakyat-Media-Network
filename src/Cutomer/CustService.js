@@ -38,15 +38,19 @@ const getCustomerServ = async () => {
 };
 
 const getCustomerByIdServ = async (id) => {
-  const response = await getCustomerByIdRepo(id);
-  const data = {
-    id: response.id,
-    picName : response.contact,
-    phone: response.contact_phone,
-    address: response.address,
-    logo: response.img_logo
+  try {
+    const response = await getCustomerByIdRepo(id);
+    const data = {
+      id: response.id,
+      picName : response.contact,
+      phone: response.contact_phone,
+      address: response.address,
+      logo: response.img_logo
+    }
+    return data;
+  } catch (error) {
+    return "data notfound"
   }
-  return data;
 };
 
 module.exports = { createCustomerServ, getCustomerServ, getCustomerByIdServ };

@@ -1,9 +1,10 @@
 const express = require("express");
 const { GetMediaTayangServ, CreateOrderServ, CreateNetworkServ, CreateMitraServ, CreateSosmedServ, GetallOrderServ, GetorderByIdServ } = require("./OrderService");
+const { AuthAll } = require("../config/Auth");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", AuthAll, async (req, res) => {
   try {
     const response = await GetMediaTayangServ();
     return res.status(200).json(response);
@@ -13,7 +14,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/new", async (req, res) => {
+router.post("/new", AuthAll, async (req, res) => {
   const {
     idCust,
     SalesType,
@@ -50,14 +51,14 @@ router.post("/new", async (req, res) => {
 
   try {
     const response = await CreateOrderServ(data);
-    return res.status(200).json(response);
+    return res.status(response.status).json(response);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 });
 
-router.post("/create/network", async (req, res) => {
+router.post("/create/network", AuthAll, async (req, res) => {
   const {name} = req.body
   try {
     const response = await CreateNetworkServ(name)
@@ -67,7 +68,7 @@ router.post("/create/network", async (req, res) => {
   }
 })
 
-router.post("/create/mitra", async (req, res) => {
+router.post("/create/mitra", AuthAll, async (req, res) => {
   const {name} = req.body
   try {
     const response = await CreateMitraServ(name)
@@ -77,7 +78,7 @@ router.post("/create/mitra", async (req, res) => {
   }
 })
 
-router.post("/create/sosmed", async (req, res) => {
+router.post("/create/sosmed", AuthAll, async (req, res) => {
   const {name} = req.body
   try {
     const response = await CreateSosmedServ(name)
@@ -87,17 +88,19 @@ router.post("/create/sosmed", async (req, res) => {
   }
 })
 
-router.get("/data", async (req, res) => {
+router.get("/data", AuthAll, async (req, res) => {
   try {
-    const response = await GetallOrderServ()
+    const pageNumber = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const response = await GetallOrderServ(pageNumber, pageSize);
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
-})
+});
 
-router.get("/data/:id", async (req, res) => {
+router.get("/data/:id", AuthAll, async (req, res) => {
   const {id} = req.params
   try {
     const response = await GetorderByIdServ(id)
