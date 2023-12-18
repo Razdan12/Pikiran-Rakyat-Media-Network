@@ -10,7 +10,7 @@ const Order = require("./Order/OrderControler");
 const Quota = require("./Quatation/QuotaContr");
 const enforce = require('express-sslify');
 const corsOptions = {
-  origin: "https",
+  origin: "*",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTION",
   credentials: true,
 };
