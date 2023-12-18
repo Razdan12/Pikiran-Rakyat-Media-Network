@@ -8,13 +8,16 @@ const RoleController = require("./Role/RoleController");
 const CustomerControler = require("./Cutomer/CustControler");
 const Order = require("./Order/OrderControler");
 const Quota = require("./Quatation/QuotaContr");
-
+const enforce = require('express-sslify');
 const corsOptions = {
-  origin: "*",
+  origin: "https",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTION",
   credentials: true,
 };
 const app = express();
+
+app.use(enforce.HTTPS({ trustProtoHeader: true }));
+
 app.use(cors(corsOptions));
 
 dotenv.config();
