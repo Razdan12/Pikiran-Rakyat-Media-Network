@@ -96,6 +96,10 @@ const GetAllOrderRepo = async (pageNumber, pageSize) => {
   })
 }
 
+const getCountOrder = async () => {
+  return await  prisma.order.count()
+}
+
 const GetOrderByIdRepo = async (id) => {
   return await prisma.order.findUnique({
     where: {
@@ -127,5 +131,6 @@ module.exports = {
   GetNetworkByIdRepo,
   GetMitraByIdRepo,
   GetSosmedByIdRepo,
-  GetOrderByIdRepo
+  GetOrderByIdRepo,
+  getCountOrder
 };

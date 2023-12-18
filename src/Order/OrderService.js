@@ -11,6 +11,7 @@ const {
   GetMitraByIdRepo,
   GetSosmedByIdRepo,
   GetOrderByIdRepo,
+  getCountOrder,
 } = require("./OrderRepo");
 
 const GetMediaTayangServ = async () => {
@@ -160,6 +161,7 @@ const CreateSosmedServ = async (name) => {
 
 const GetallOrderServ = async (pageNumber, pageSize) => {
   const order = await GetAllOrderRepo(pageNumber, pageSize);
+  const totalDataOrder = await getCountOrder()
 
   const orderResponse = await Promise.all(
     order.map(async (item) => {
@@ -194,6 +196,7 @@ const GetallOrderServ = async (pageNumber, pageSize) => {
         customer: {
           id: item.costumer.id,
           name: item.costumer.name,
+
         },
         mediaTayang: {
           ...(item.mtPikiranRakyat
@@ -219,8 +222,9 @@ const GetallOrderServ = async (pageNumber, pageSize) => {
   );
 
   const data = {
-    totalData: order.length,
+    totalPage: Math.ceil(totalDataOrder / pageSize),
     pageNumber: pageNumber,
+    totalData: order.length,
     dataOrder: orderResponse
   }
 
@@ -261,6 +265,7 @@ const GetorderByIdServ = async (id) => {
       id: order.costumer.id,
       name: order.costumer.name,
     },
+    
     mediaTayang: {
       ...(order.mtPikiranRakyat ? { pikiranRakyat: order.mtPikiranRakyat } : {}),
       ...(network.length ? { network: network } : {}),
@@ -276,6 +281,7 @@ const GetorderByIdServ = async (id) => {
       ...(order.semiBarter.length ? { semi_barter: order.semiBarter } : {}),
       ...(order.termin.length ? { termin: order.termin } : {}),
     },
+
   };
 };
 
