@@ -47,7 +47,7 @@ model Custs {
 }
 
 model Order {
-  id              String          @id @default(cuid())
+  id              String             @id @default(cuid())
   idCust          String
   SalesType       String?
   camp_name       String?
@@ -57,9 +57,10 @@ model Order {
   period_start    DateTime?
   period_end      DateTime?
   pay_type        String?
-  createdAt       DateTime?       @default(now())
-  updatedAt       DateTime?       @updatedAt
-  costumer        Custs           @relation(fields: [idCust], references: [id])
+  noMo            String?
+  createdAt       DateTime?          @default(now())
+  updatedAt       DateTime?          @updatedAt
+  costumer        Custs              @relation(fields: [idCust], references: [id])
   OrderNetwork    OrderNetwork[]
   OrderMitra      OrderMitra[]
   OrderArtikel    OrderArtikel[]
@@ -70,6 +71,7 @@ model Order {
   kredit          payKredit[]
   termin          payTermin[]
   deposit         payDeposit[]
+  oti             OrderTayangIklan[]
 }
 
 model Network {
@@ -192,4 +194,13 @@ model payDeposit {
   status       String
 
   @@id([idOrder])
+}
+
+model OrderTayangIklan {
+  id      String  @id @default(cuid())
+  idOrder String
+  product String?
+  sub     String?
+  oti     String?
+  order   Order?  @relation(fields: [idOrder], references: [id])
 }

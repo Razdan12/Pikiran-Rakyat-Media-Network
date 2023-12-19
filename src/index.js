@@ -8,6 +8,7 @@ const RoleController = require("./Role/RoleController");
 const CustomerControler = require("./Cutomer/CustControler");
 const Order = require("./Order/OrderControler");
 const Quota = require("./Quatation/QuotaContr");
+const Oti = require("./Oti/OtiContr")
 const enforce = require('express-sslify');
 const corsOptions = {
   origin: "*",
@@ -16,7 +17,7 @@ const corsOptions = {
 };
 const app = express();
 
-app.use(enforce.HTTPS({ trustProtoHeader: true }));
+// app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
 app.use(cors(corsOptions));
 
@@ -33,6 +34,7 @@ app.use("/customer", CustomerControler);
 app.use("/img", express.static("public"));
 app.use("/order", Order);
 app.use("/quotation", Quota);
+app.use("/oti", Oti)
 
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });

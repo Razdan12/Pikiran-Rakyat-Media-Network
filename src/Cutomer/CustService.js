@@ -42,6 +42,7 @@ const getCustomerByIdServ = async (id) => {
     const response = await getCustomerByIdRepo(id);
     const data = {
       id: response.id,
+      name: response.name,
       picName : response.contact,
       phone: response.contact_phone,
       address: response.address,
