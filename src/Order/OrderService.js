@@ -1,6 +1,5 @@
 const { getCustomerByIdServ } = require("../Cutomer/CustService");
 const { createOtiRepo, countOti } = require("../Oti/OtiRepo");
-const { createOtiServ } = require("../Oti/OtiServ");
 const { Response } = require("../config/Response");
 const {
   GetMediaTayang,
@@ -284,7 +283,7 @@ const createOti = async (idOrder, dataProps) => {
       
       await createOtiRepo(dataRest);
   }
-  console.log(dataProps.artikel);
+  
   if(dataProps.artikel.artikel_2){
     const count = await countOti("Artikel");
       const dataRest = {

@@ -27,6 +27,8 @@ const getOtiRepo = async (pageNumber, pageSize) => {
 const contAllOti = async () => {
     return await prisma.orderTayangIklan.count()
 }
+
+
 module.exports = {
     createOtiRepo,
     countOti,
