@@ -27,10 +27,10 @@ const getMediaOrderData = async (pageNumber, pageSize) => {
                     period_start : new Date(item.period_start).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
                     period_end: new Date(item.period_end).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
                     media_order : 'mo/2023'
-
                 }
             })
         )
+        
     return {
         pageNumber : order.pageNumber,
         totalPage: order.totalPage,

@@ -261,24 +261,25 @@ const createOti = async (idOrder, dataProps) => {
     dataProps.sosmed.map(async (sosItem, index) => {
       const sosmedData = await GetSosmedByIdRepo(sosItem);
       const count = await countOti("Media Sosial");
+      const formattedCount = String(count + index + 1).padStart(3, '0');
       const dataRest = {
         idOrder: idOrder,
         product: "Media Sosial",
         sub: sosmedData.name,
-        oti: `${count + index + 1}/MS03/291/OTI-CRW/${month}/${year}`,
+        oti: `${formattedCount}/MS03/291/OTI-CRW/${month}/${year}`,
       };
-      
       await createOtiRepo(dataRest);
     })
   );
 
   if(dataProps.artikel.artikel_1){
     const count = await countOti("Artikel");
+    const formattedCount = String(count + index + 1).padStart(3, '0');
       const dataRest = {
         idOrder: idOrder,
         product: "Artikel",
         sub: 'Artikel & Content',
-        oti: `${count + 1}/A01/291/OTI-CRW/${month}/${year}`,
+        oti: `${formattedCount}/A01/291/OTI-CRW/${month}/${year}`,
       };
       
       await createOtiRepo(dataRest);
@@ -286,11 +287,12 @@ const createOti = async (idOrder, dataProps) => {
   
   if(dataProps.artikel.artikel_2){
     const count = await countOti("Artikel");
+    const formattedCount = String(count + index + 1).padStart(3, '0');
       const dataRest = {
         idOrder: idOrder,
         product: "Artikel",
         sub: 'Artikel & Content Nework',
-        oti: `${count + 1}/A01/291/OTI-CRW/${month}/${year}`,
+        oti: `${formattedCount}/A01/291/OTI-CRW/${month}/${year}`,
       };
       
       await createOtiRepo(dataRest);

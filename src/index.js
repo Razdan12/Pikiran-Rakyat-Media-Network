@@ -17,7 +17,7 @@ const corsOptions = {
 };
 const app = express();
 
-app.use(enforce.HTTPS({ trustProtoHeader: true }));
+// app.use(enforce.HTTPS({ trustProtoHeader: true }));
 
 app.use(cors(corsOptions));
 
