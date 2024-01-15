@@ -168,6 +168,15 @@ const CreateSosmedServ = async (name) => {
   return await CreateSosmedRepo(name);
 };
 
+const UploadMitra = async (data) => {
+  const dataRest = await Promise.all(
+    data.map((Item) => {
+      return CreateMitraRepo(Item.nama);
+    })
+  );
+  return dataRest;
+}
+
 const GetallOrderServ = async (pageNumber, pageSize) => {
   const order = await GetAllOrderRepo(pageNumber, pageSize);
   const totalDataOrder = await getCountOrder();
@@ -261,6 +270,7 @@ const createOti = async (idOrder, dataProps) => {
     dataProps.sosmed.map(async (sosItem, index) => {
       const sosmedData = await GetSosmedByIdRepo(sosItem);
       const count = await countOti("Media Sosial");
+     
       const formattedCount = String(count + index + 1).padStart(3, '0');
       const dataRest = {
         idOrder: idOrder,
@@ -362,4 +372,5 @@ module.exports = {
   CreateSosmedServ,
   GetallOrderServ,
   GetorderByIdServ,
+  UploadMitra
 };

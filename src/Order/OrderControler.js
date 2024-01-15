@@ -1,6 +1,10 @@
 const express = require("express");
-const { GetMediaTayangServ, CreateOrderServ, CreateNetworkServ, CreateMitraServ, CreateSosmedServ, GetallOrderServ, GetorderByIdServ } = require("./OrderService");
+const { GetMediaTayangServ, CreateOrderServ, CreateNetworkServ, CreateMitraServ, CreateSosmedServ, GetallOrderServ, GetorderByIdServ, UploadMitra } = require("./OrderService");
 const { AuthAll } = require("../config/Auth");
+const multer = require("multer");
+const readXlsxFile = require("read-excel-file/node");
+const { CreateMitraRepo } = require("./OrderRepo");
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 
@@ -77,6 +81,23 @@ router.post("/create/mitra", AuthAll, async (req, res) => {
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 })
+
+router.post("/upload/mitra", upload.single("file"), async (req, res, next) => {
+  try {
+    const rows = await readXlsxFile(req.file.path);
+    const MitraPromise = rows.slice(1).map((row) => {
+      return {
+        nama: row[1]
+      };
+    });
+
+    const response = await UploadMitra(MitraPromise);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    next(new Error("Terjadi kesalahan pada server"));
+  }
+});
 
 router.post("/create/sosmed", AuthAll, async (req, res) => {
   const {name} = req.body

@@ -2,6 +2,8 @@ const {
   createCustomerRepo,
   getCustomer,
   getCustomerByIdRepo,
+  getCustomerAll,
+  getCountCustomer,
 } = require("./CustRepo");
 
 const createCustomerServ = async (dataRes) => {
@@ -38,6 +40,7 @@ const getCustomerServ = async () => {
 };
 
 const getCustomerByIdServ = async (id) => {
+  
   try {
     const response = await getCustomerByIdRepo(id);
     const data = {
@@ -50,8 +53,43 @@ const getCustomerByIdServ = async (id) => {
     }
     return data;
   } catch (error) {
+
     return "data notfound"
   }
 };
 
-module.exports = { createCustomerServ, getCustomerServ, getCustomerByIdServ };
+const getAllCust = async  (pageNumber, pageSize) => {
+  try {
+    const customer = await getCustomerAll (pageNumber, pageSize);
+    const count = await getCountCustomer()
+    const customerResponse = await Promise.all(
+      customer.map(async (item) => {
+        return {
+          id: item.id,
+          custname: item.name,
+          contactName: item.contact,
+          phone: item.contact_phone,
+          email: item.email,
+          address: item.address,
+          finName: item.fincontact,
+          finContact: item.fincontact_phone
+        }
+      })
+    )
+
+    const data = {
+      totalPage: Math.ceil(count / pageSize),
+      pageNumber: pageNumber,
+      totalData: customer.length,
+      data: customerResponse,
+    };
+    console.log(data);
+  
+    return data;
+   
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+module.exports = { createCustomerServ, getCustomerServ, getCustomerByIdServ , getAllCust};

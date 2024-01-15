@@ -2,7 +2,12 @@ const express = require("express");
 const upload = require("../config/Multer");
 const router = express.Router();
 const dotenv = require("dotenv");
-const { createCustomerServ, getCustomerServ, getCustomerByIdServ } = require("./CustService");
+const {
+  createCustomerServ,
+  getCustomerServ,
+  getCustomerByIdServ,
+  getAllCust,
+} = require("./CustService");
 const { AuthAll } = require("../config/Auth");
 dotenv.config();
 
@@ -47,6 +52,7 @@ router.post("/add", upload.array("files"), AuthAll, async (req, res) => {
 });
 
 router.get("/all", AuthAll, async (req, res) => {
+  
   try {
     const response = await getCustomerServ();
     res.status(200).json(response);
@@ -55,15 +61,30 @@ router.get("/all", AuthAll, async (req, res) => {
   }
 });
 
+router.get("/cust",  AuthAll, async (req, res) => {
+ console.log('ini jalan ya1');
+  try {
+    const pageNumber = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+
+    const response = await getAllCust(pageNumber, pageSize);
+    
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Terjadi eror pada server !" });
+  }
+});
+
 router.get("/:id", AuthAll, async (req, res) => {
-    const id = req.params.id
-   
-    try {
-        const response = await getCustomerByIdServ(id)
-        res.status(200).json(response)
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan pada server" });
-    }
-})
+  const id = req.params.id;
+console.log('ini jalan');
+  try {
+    const response = await getCustomerByIdServ(id);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
 
 module.exports = router;

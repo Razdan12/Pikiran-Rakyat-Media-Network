@@ -18,4 +18,17 @@ const getCustomerByIdRepo = async (id) => {
     }
   })
 } 
-module.exports = { createCustomerRepo, getCustomer, getCustomerByIdRepo };
+
+const getCountCustomer = async () => {
+  return prisma.custs.count()
+}
+
+const getCustomerAll = async (pageNumber, pageSize) => {
+  return await prisma.custs.findMany({
+    skip: (pageNumber - 1) * pageSize,
+    take: pageSize
+    
+  })
+}
+
+module.exports = { createCustomerRepo, getCustomer, getCustomerByIdRepo, getCustomerAll , getCountCustomer};
