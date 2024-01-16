@@ -63,9 +63,9 @@ router.post("/new",  async (req, res) => {
 });
 
 router.post("/create/network", AuthAll, async (req, res) => {
-  const {name} = req.body
+  const {name, status} = req.body
   try {
-    const response = await CreateNetworkServ(name)
+    const response = await CreateNetworkServ(name, status)
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
@@ -73,9 +73,9 @@ router.post("/create/network", AuthAll, async (req, res) => {
 })
 
 router.post("/create/mitra", AuthAll, async (req, res) => {
-  const {name} = req.body
+  const {name, status} = req.body
   try {
-    const response = await CreateMitraServ(name)
+    const response = await CreateMitraServ(name, status)
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
@@ -100,9 +100,9 @@ router.post("/upload/mitra", upload.single("file"), async (req, res, next) => {
 });
 
 router.post("/create/sosmed", AuthAll, async (req, res) => {
-  const {name} = req.body
+  const {name, status} = req.body
   try {
-    const response = await CreateSosmedServ(name)
+    const response = await CreateSosmedServ(name, status)
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });

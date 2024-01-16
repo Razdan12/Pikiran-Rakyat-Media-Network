@@ -31,4 +31,13 @@ const getCustomerAll = async (pageNumber, pageSize) => {
   })
 }
 
-module.exports = { createCustomerRepo, getCustomer, getCustomerByIdRepo, getCustomerAll , getCountCustomer};
+const deleteCustomer = async (id) => {
+  console.log();
+  return await prisma.custs.delete({
+    where: {
+      id: id
+    }
+  })
+}
+
+module.exports = { createCustomerRepo, getCustomer, getCustomerByIdRepo, getCustomerAll , getCountCustomer, deleteCustomer};

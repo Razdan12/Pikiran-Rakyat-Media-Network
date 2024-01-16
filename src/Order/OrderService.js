@@ -13,6 +13,7 @@ const {
   GetSosmedByIdRepo,
   GetOrderByIdRepo,
   getCountOrder,
+ 
 } = require("./OrderRepo");
 
 const GetMediaTayangServ = async () => {
@@ -157,16 +158,18 @@ const CreateOrderServ = async (dataOrder) => {
   }
 };
 
-const CreateNetworkServ = async (name) => {
-  return await CreateNetworkRepo(name);
+const CreateNetworkServ = async (name, status) => {
+  return await CreateNetworkRepo(name, status);
 };
 
-const CreateMitraServ = async (name) => {
-  return await CreateMitraRepo(name);
+const CreateMitraServ = async (name, status) => {
+  return await CreateMitraRepo(name, status);
 };
-const CreateSosmedServ = async (name) => {
-  return await CreateSosmedRepo(name);
+const CreateSosmedServ = async (name, status) => {
+  return await CreateSosmedRepo(name, status);
 };
+
+
 
 const UploadMitra = async (data) => {
   const dataRest = await Promise.all(
@@ -372,5 +375,6 @@ module.exports = {
   CreateSosmedServ,
   GetallOrderServ,
   GetorderByIdServ,
-  UploadMitra
+  UploadMitra,
+ 
 };

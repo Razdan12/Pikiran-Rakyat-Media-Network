@@ -10,6 +10,7 @@ const CustomerControler = require('./Cutomer/CustControler');
 const Order = require('./Order/OrderControler');
 const Quota = require('./Quatation/QuotaContr');
 const Oti = require('./Oti/OtiContr');
+const Media = require('./mediaTayang/mediaContr');
 
 
 const corsOptions = {
@@ -35,6 +36,7 @@ app.use('/img', express.static('public'));
 app.use('/order', Order);
 app.use('/quotation', Quota);
 app.use('/oti', Oti);
+app.use('/media', Media);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Endpoint not found' });

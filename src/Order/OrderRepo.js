@@ -27,10 +27,11 @@ const CreateOrderRepo = async (dataOrder) => {
   }
 };
 
-const CreateNetworkRepo = async (name) => {
+const CreateNetworkRepo = async (name, status) => {
   return await prisma.network.create({
     data: {
       name,
+      status
     },
   });
 };
@@ -43,10 +44,11 @@ const GetNetworkByIdRepo = async (id) => {
   })
 }
 
-const CreateMitraRepo = async (name) => {
+const CreateMitraRepo = async (name, status) => {
   return await prisma.mitra.create({
     data: {
       name,
+      status
     },
   });
 };
@@ -59,10 +61,11 @@ const GetMitraByIdRepo = async (id) => {
   })
 }
 
-const CreateSosmedRepo = async (name) => {
+const CreateSosmedRepo = async (name,status) => {
   return await prisma.sosmed.create({
     data: {
       name,
+      status
     },
   });
 };
@@ -74,7 +77,6 @@ const GetSosmedByIdRepo = async (id) => {
     }
   })
 }
-
 
 const GetAllOrderRepo = async (pageNumber, pageSize) => {
   return await prisma.order.findMany({
@@ -132,5 +134,6 @@ module.exports = {
   GetMitraByIdRepo,
   GetSosmedByIdRepo,
   GetOrderByIdRepo,
-  getCountOrder
+  getCountOrder,
+ 
 };

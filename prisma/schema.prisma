@@ -77,18 +77,22 @@ model Order {
 model Network {
   id           String         @id @default(cuid())
   name         String
+  status       Boolean?
+
   OrderNetwork OrderNetwork[]
 }
 
 model Mitra {
   id         String       @id @default(cuid())
   name       String
+  status     Boolean?
   OrderMitra OrderMitra[]
 }
 
 model Sosmed {
   id          String        @id @default(cuid())
   name        String
+  status      Boolean?
   OrderSosmed OrderSosmed[]
 }
 

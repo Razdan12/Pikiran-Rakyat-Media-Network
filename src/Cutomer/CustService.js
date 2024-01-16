@@ -4,6 +4,7 @@ const {
   getCustomerByIdRepo,
   getCustomerAll,
   getCountCustomer,
+  deleteCustomer,
 } = require("./CustRepo");
 
 const createCustomerServ = async (dataRes) => {
@@ -40,28 +41,26 @@ const getCustomerServ = async () => {
 };
 
 const getCustomerByIdServ = async (id) => {
-  
   try {
     const response = await getCustomerByIdRepo(id);
     const data = {
       id: response.id,
       name: response.name,
-      picName : response.contact,
+      picName: response.contact,
       phone: response.contact_phone,
       address: response.address,
-      logo: response.img_logo
-    }
+      logo: response.img_logo,
+    };
     return data;
   } catch (error) {
-
-    return "data notfound"
+    return "data notfound";
   }
 };
 
-const getAllCust = async  (pageNumber, pageSize) => {
+const getAllCust = async (pageNumber, pageSize) => {
   try {
-    const customer = await getCustomerAll (pageNumber, pageSize);
-    const count = await getCountCustomer()
+    const customer = await getCustomerAll(pageNumber, pageSize);
+    const count = await getCountCustomer();
     const customerResponse = await Promise.all(
       customer.map(async (item) => {
         return {
@@ -72,10 +71,10 @@ const getAllCust = async  (pageNumber, pageSize) => {
           email: item.email,
           address: item.address,
           finName: item.fincontact,
-          finContact: item.fincontact_phone
-        }
+          finContact: item.fincontact_phone,
+        };
       })
-    )
+    );
 
     const data = {
       totalPage: Math.ceil(count / pageSize),
@@ -83,13 +82,27 @@ const getAllCust = async  (pageNumber, pageSize) => {
       totalData: customer.length,
       data: customerResponse,
     };
-    console.log(data);
-  
+
     return data;
-   
   } catch (error) {
     console.log(error);
   }
-}
+};
 
-module.exports = { createCustomerServ, getCustomerServ, getCustomerByIdServ , getAllCust};
+const deleteCustomerServ = async (id) => {
+  const user = await getCustomerByIdRepo(id);
+
+  if (user) {
+    return await deleteCustomer(id);
+  } else {
+    return "user tidak ditemukan";
+  }
+};
+
+module.exports = {
+  createCustomerServ,
+  getCustomerServ,
+  getCustomerByIdServ,
+  getAllCust,
+  deleteCustomerServ,
+};
