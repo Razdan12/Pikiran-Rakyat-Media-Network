@@ -75,9 +75,9 @@ model Order {
 }
 
 model Network {
-  id           String         @id @default(cuid())
-  name         String
-  status       Boolean?
+  id     String   @id @default(cuid())
+  name   String
+  status Boolean?
 
   OrderNetwork OrderNetwork[]
 }
@@ -207,4 +207,68 @@ model OrderTayangIklan {
   sub     String?
   oti     String?
   order   Order?  @relation(fields: [idOrder], references: [id])
+}
+
+// update
+
+model rate_article {
+  id                    String    @id @default(cuid())
+  name                  String
+  prmn                  Int?
+  mitra                 Int?
+  is_custom_price_prmn  Boolean?
+  is_custom_price_mitra Boolean?
+  note                  String?
+  createdAt             DateTime? @default(now())
+  updatedAt             DateTime? @updatedAt
+}
+
+model rate_sosmed {
+  id              String    @id @default(cuid())
+  name            String
+  instagram       Int?
+  facebook        Int?
+  rate            Int?
+  type            String?
+  note            String?
+  is_other        Boolean?
+  is_custom_price Boolean?
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
+}
+
+model rate_other_content {
+  id              String    @id @default(cuid())
+  name            String
+  rate            Int?
+  note            String?
+  is_custom_price Boolean?
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
+}
+
+model rate_cpd {
+  id              String    @id @default(cuid())
+  name            String
+  type            String?
+  size            String?
+  rate_home       Int?
+  rate_detail     Int?
+  rate_section    Int?
+  rate            Int?
+  is_other        Boolean?
+  is_custom_price Boolean?
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
+}
+
+model rate_cpm {
+  id              String    @id @default(cuid())
+  name            String
+  type            String?
+  size            String?
+  rate            Int?
+  is_custom_price Boolean?
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
 }

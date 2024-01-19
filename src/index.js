@@ -11,6 +11,7 @@ const Order = require('./Order/OrderControler');
 const Quota = require('./Quatation/QuotaContr');
 const Oti = require('./Oti/OtiContr');
 const Media = require('./mediaTayang/mediaContr');
+const Rate = require('./rateCard/rateContr')
 
 
 const corsOptions = {
@@ -37,6 +38,7 @@ app.use('/order', Order);
 app.use('/quotation', Quota);
 app.use('/oti', Oti);
 app.use('/media', Media);
+app.use('/rate-card', Rate )
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Endpoint not found' });
