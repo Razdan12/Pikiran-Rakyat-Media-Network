@@ -11,12 +11,13 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
+  id       String  @id @default(cuid())
   name     String
-  email    String @unique
+  email    String  @unique
   password String
   role_id  String
-  role     Role   @relation(fields: [role_id], references: [id])
+  role     Role    @relation(fields: [role_id], references: [id])
+  order    Order[]
 }
 
 model Role {
@@ -47,39 +48,31 @@ model Custs {
 }
 
 model Order {
-  id              String             @id @default(cuid())
-  idCust          String
-  SalesType       String?
-  camp_name       String?
-  order_no        String?
-  order_date      String?
-  mtPikiranRakyat Boolean?
-  period_start    DateTime?
-  period_end      DateTime?
-  pay_type        String?
-  noMo            String?
-  createdAt       DateTime?          @default(now())
-  updatedAt       DateTime?          @updatedAt
-  costumer        Custs              @relation(fields: [idCust], references: [id])
-  OrderNetwork    OrderNetwork[]
-  OrderMitra      OrderMitra[]
-  OrderArtikel    OrderArtikel[]
-  OrderSosmed     OrderSosmed[]
-  payCash         payCash[]
-  barter          payBarter[]
-  semiBarter      paySemiBarter[]
-  kredit          payKredit[]
-  termin          payTermin[]
-  deposit         payDeposit[]
-  oti             OrderTayangIklan[]
-}
-
-model Network {
-  id     String   @id @default(cuid())
-  name   String
-  status Boolean?
-
-  OrderNetwork OrderNetwork[]
+  id                String              @id @default(cuid())
+  id_cust           String
+  Sales_type        String?
+  camp_name         String?
+  order_no          String?
+  order_date        String?
+  period_start      DateTime?
+  period_end        DateTime?
+  pay_type          String?
+  no_mo             String?
+  id_user           String
+  media_tayang      String?
+  created_At        DateTime?           @default(now())
+  updated_At        DateTime?           @updatedAt
+  costumer          Custs               @relation(fields: [id_cust], references: [id])
+  user              User                @relation(fields: [id_user], references: [id])
+  OrderMitra        OrderMitra[]
+  payCash           payCash[]
+  barter            payBarter[]
+  semiBarter        paySemiBarter[]
+  kredit            payKredit[]
+  termin            payTermin[]
+  deposit           payDeposit[]
+  oti               OrderTayangIklan[]
+  rate_article_cust rate_article_cust[]
 }
 
 model Mitra {
@@ -87,22 +80,6 @@ model Mitra {
   name       String
   status     Boolean?
   OrderMitra OrderMitra[]
-}
-
-model Sosmed {
-  id          String        @id @default(cuid())
-  name        String
-  status      Boolean?
-  OrderSosmed OrderSosmed[]
-}
-
-model OrderNetwork {
-  idOrder   String
-  idNetwork String
-  order     Order?   @relation(fields: [idOrder], references: [id])
-  network   Network? @relation(fields: [idNetwork], references: [id])
-
-  @@id([idOrder, idNetwork])
 }
 
 model OrderMitra {
@@ -114,30 +91,22 @@ model OrderMitra {
   @@id([idMitra, idOrder])
 }
 
-model OrderArtikel {
+model rate_article_cust {
   idOrder   String
-  Artikel_1 Int?
-  Artikel_2 Int?
-  order     Order  @relation(fields: [idOrder], references: [id])
+  idArtikel String
+  order     Order?        @relation(fields: [idOrder], references: [id])
+  artikel   rate_article? @relation(fields: [idArtikel], references: [id])
 
-  @@id([idOrder])
-}
-
-model OrderSosmed {
-  idOrder  String
-  idSosmed String
-  order    Order?  @relation(fields: [idOrder], references: [id])
-  sosmed   Sosmed? @relation(fields: [idSosmed], references: [id])
-
-  @@id([idOrder, idSosmed])
+  @@id([idOrder, idArtikel])
 }
 
 model payCash {
-  idOrder String
-  order   Order?   @relation(fields: [idOrder], references: [id])
-  total   Int
-  tempo   DateTime
-  diskon  Int?
+  idOrder         String
+  order           Order?   @relation(fields: [idOrder], references: [id])
+  total           Int
+  tempo           DateTime
+  diskon          Int?
+  finalPrice Int?
 
   @@id([idOrder])
 }
@@ -212,15 +181,16 @@ model OrderTayangIklan {
 // update
 
 model rate_article {
-  id                    String    @id @default(cuid())
+  id                    String              @id @default(cuid())
   name                  String
   prmn                  Int?
   mitra                 Int?
   is_custom_price_prmn  Boolean?
   is_custom_price_mitra Boolean?
   note                  String?
-  createdAt             DateTime? @default(now())
-  updatedAt             DateTime? @updatedAt
+  createdAt             DateTime?           @default(now())
+  updatedAt             DateTime?           @updatedAt
+  rate_artikel_cust     rate_article_cust[]
 }
 
 model rate_sosmed {

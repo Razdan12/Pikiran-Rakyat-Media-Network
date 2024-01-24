@@ -14,6 +14,7 @@ const Media = require('./mediaTayang/mediaContr');
 const Rate = require('./rateCard/rateContr')
 
 
+
 const corsOptions = {
   origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTION',
@@ -45,8 +46,8 @@ app.use((req, res) => {
 });
 
 // SSL configuration
-// const privateKey = fs.readFileSync('../certs/sade.crt', 'utf8');
-// const certificate = fs.readFileSync('../certs/sade.key', 'utf8');
+// const privateKey = fs.readFileSync('./certs/sade.key', 'utf8');
+// const certificate = fs.readFileSync('./certs/sade.crt', 'utf8');
 
 // const credentials = { key: privateKey, cert: certificate };
 

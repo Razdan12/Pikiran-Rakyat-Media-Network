@@ -18,5 +18,12 @@ const Login = async (email) => {
     })
 }
 
+const getUserByIdRepo = async (id) => {
+  return await prisma.user.findUnique({
+    where: {
+      id
+    }
+  })
+}
 
-module.exports = { createUserRepo ,Login};
+module.exports = { createUserRepo ,Login, getUserByIdRepo};

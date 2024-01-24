@@ -9,6 +9,7 @@ const {
   getRateOtherRepo,
   getCpdRepo,
   getAllCpmRepo,
+  getArtikrelByIdRepo,
 } = require("./rateRepo");
 
 const addArticleServ = async (data) => {
@@ -83,7 +84,21 @@ const addCPMServ = async (data) => {
 
 const getAllArticleServ = async () => {
     const article = await getArticleAllRepo()
-    return article
+    const articleRest = await Promise.all(
+      article.map(async (item) => {
+        const data = {
+          id: item.id,
+          name: item.name,
+          mitra: item.mitra,
+          prmn: item.prmn,
+          note: item.note,
+          is_custom_price_mitra: item.is_custom_price_mitra,
+          is_custom_price_prmn: item.is_custom_price_prmn
+        }
+        return data
+      })
+    )
+    return articleRest
 }
 
 const getRateSosmed = async () => {
@@ -118,6 +133,11 @@ const getAllCpmServ = async () => {
     return cpm
 }
 
+const getartikelByIdServ = async (id) => {
+  const artikel = await getArtikrelByIdRepo(id)
+  return artikel
+}
+
 module.exports = {
   addArticleServ,
   addRateSosmedServ,
@@ -128,5 +148,6 @@ module.exports = {
   getRateSosmed,
   getRateOtherServ,
   getAllCpdServ,
-  getAllCpmServ
+  getAllCpmServ,
+  getartikelByIdServ
 };

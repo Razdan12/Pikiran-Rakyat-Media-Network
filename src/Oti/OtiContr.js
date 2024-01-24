@@ -22,6 +22,7 @@ router.get("/report", async (req, res) => {
     const response = await reportServ(pageNumber, pageSize)
     return res.status(200).json(response);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 })

@@ -71,6 +71,15 @@ const getAllCpmRepo = async () => {
     return cpm
 }
 
+const getArtikrelByIdRepo = async (id) => {
+  const artikel = await prisma.rate_article.findUnique({
+    where: {
+      id
+    }
+  })
+  return artikel
+}
+
 module.exports = {
   addArticleRepo,
   addRateSosmedRepo,
@@ -81,5 +90,6 @@ module.exports = {
   getRateSosmedRepo,
   getRateOtherRepo,
   getCpdRepo,
-  getAllCpmRepo
+  getAllCpmRepo,
+  getArtikrelByIdRepo
 };

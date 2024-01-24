@@ -1,18 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const GetMediaTayang = async () => {
-  const network = await prisma.network.findMany();
-  const mitra = await prisma.mitra.findMany();
-  const sosmed = await prisma.sosmed.findMany();
-  const dataRest = {
-    network,
-    mitra,
-    sosmed,
-  };
-
-  return dataRest;
-};
 
 const CreateOrderRepo = async (dataOrder) => {
   try {
@@ -26,23 +14,6 @@ const CreateOrderRepo = async (dataOrder) => {
     throw error;
   }
 };
-
-const CreateNetworkRepo = async (name, status) => {
-  return await prisma.network.create({
-    data: {
-      name,
-      status
-    },
-  });
-};
-
-const GetNetworkByIdRepo = async (id) => {
-  return prisma.network.findUnique({
-    where: {
-      id
-    }
-  })
-}
 
 const CreateMitraRepo = async (name, status) => {
   return await prisma.mitra.create({
@@ -61,33 +32,20 @@ const GetMitraByIdRepo = async (id) => {
   })
 }
 
-const CreateSosmedRepo = async (name,status) => {
-  return await prisma.sosmed.create({
-    data: {
-      name,
-      status
-    },
-  });
-};
-
-const GetSosmedByIdRepo = async (id) => {
-  return prisma.sosmed.findUnique({
+const GetOrderByIdRepo = async (id) => {
+  return await prisma.order.findUnique({
     where: {
       id
     }
   })
 }
-
 const GetAllOrderRepo = async (pageNumber, pageSize) => {
   return await prisma.order.findMany({
     skip: (pageNumber - 1) * pageSize,
     take: pageSize,
     include: {
       costumer: true,
-      OrderNetwork: true,
       OrderMitra: true,
-      OrderArtikel: true,
-      OrderSosmed: true,
       payCash: true,
       barter: true,
       semiBarter: true,
@@ -102,38 +60,14 @@ const getCountOrder = async () => {
   return await  prisma.order.count()
 }
 
-const GetOrderByIdRepo = async (id) => {
-  return await prisma.order.findUnique({
-    where: {
-      id
-    },
-    include: {
-      costumer: true,
-      OrderNetwork: true,
-      OrderMitra: true,
-      OrderArtikel: true,
-      OrderSosmed: true,
-      payCash: true,
-      barter: true,
-      semiBarter: true,
-      kredit: true,
-      termin: true
-
-    }
-  })
-}
 
 module.exports = {
-  GetMediaTayang,
+ 
   CreateOrderRepo,
-  CreateNetworkRepo,
   CreateMitraRepo,
-  CreateSosmedRepo,
   GetAllOrderRepo,
-  GetNetworkByIdRepo,
   GetMitraByIdRepo,
-  GetSosmedByIdRepo,
-  GetOrderByIdRepo,
   getCountOrder,
+  GetOrderByIdRepo
  
 };

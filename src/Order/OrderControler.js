@@ -8,7 +8,7 @@ const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 
-router.get("/", AuthAll, async (req, res) => {
+router.get("/",  async (req, res) => {
   try {
     const response = await GetMediaTayangServ();
     return res.status(200).json(response);
@@ -21,36 +21,36 @@ router.get("/", AuthAll, async (req, res) => {
 router.post("/new",  async (req, res) => {
   const {
     idCust,
+    idUser,
     SalesType,
     camp_name,
     order_no,
     order_date,
-    mtPikiranRakyat,
     period_start,
     period_end,
     pay_type,
-    OrderNetwork,
     OrderMitra,
-    OrderArtikel,
-    OrderSosmed,
+    typeRate,
+    mediaTayang,
+    rateCard,
     payment,
   } = req.body;
 
   const data = {
     idCust: idCust,
+    idUser,
     SalesType: SalesType,
     camp_name: camp_name,
     order_no: order_no,
     order_date: order_date,
-    mtPikiranRakyat: mtPikiranRakyat,
     period_start: period_start,
     period_end: period_end,
     pay_type: pay_type,
-    OrderNetwork: OrderNetwork,
     OrderMitra: OrderMitra,
-    OrderSosmed: OrderSosmed,
-    OrderArtikel,
+    typeRate,
+    rateCard,
     payment,
+    mediaTayang
   };
 
   try {
@@ -62,15 +62,6 @@ router.post("/new",  async (req, res) => {
   }
 });
 
-router.post("/create/network", AuthAll, async (req, res) => {
-  const {name, status} = req.body
-  try {
-    const response = await CreateNetworkServ(name, status)
-    return res.status(200).json(response);
-  } catch (error) {
-    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
-  }
-})
 
 router.post("/create/mitra", AuthAll, async (req, res) => {
   const {name, status} = req.body
@@ -98,16 +89,6 @@ router.post("/upload/mitra", upload.single("file"), async (req, res, next) => {
     next(new Error("Terjadi kesalahan pada server"));
   }
 });
-
-router.post("/create/sosmed", AuthAll, async (req, res) => {
-  const {name, status} = req.body
-  try {
-    const response = await CreateSosmedServ(name, status)
-    return res.status(200).json(response);
-  } catch (error) {
-    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
-  }
-})
 
 router.get("/data", AuthAll, async (req, res) => {
   try {

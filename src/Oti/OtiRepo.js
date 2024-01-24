@@ -7,12 +7,8 @@ const createOtiRepo = async (data) => {
     })
 }
 
-const countOti = async (props) => {
-    return await prisma.orderTayangIklan.count({
-        where: {
-            product: props
-        }
-    })
+const countOti = async () => {
+    return await prisma.orderTayangIklan.count()
 } 
 
 const getOtiRepo = async (pageNumber, pageSize) => {

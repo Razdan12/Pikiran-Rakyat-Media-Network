@@ -1,155 +1,88 @@
 const { getCustomerByIdServ } = require("../Cutomer/CustService");
 const { createOtiRepo, countOti } = require("../Oti/OtiRepo");
+const { getUserByIdRepo } = require("../User/UserRepo");
 const { Response } = require("../config/Response");
+const { getartikelByIdServ } = require("../rateCard/rateServ");
 const {
-  GetMediaTayang,
   CreateOrderRepo,
-  CreateNetworkRepo,
   CreateMitraRepo,
-  CreateSosmedRepo,
   GetAllOrderRepo,
-  GetNetworkByIdRepo,
   GetMitraByIdRepo,
-  GetSosmedByIdRepo,
-  GetOrderByIdRepo,
   getCountOrder,
- 
 } = require("./OrderRepo");
 
-const GetMediaTayangServ = async () => {
-  return await GetMediaTayang();
-};
+const getRate = async (Item, mediaTayang) => {
+  const artikel = await getartikelByIdServ(Item);
+  return mediaTayang === 'PRMN' ? artikel.prmn : artikel.mitra;
+}
+
+const getTotalRate = async (article, mediaTayang) => {
+  if (Array.isArray(article)) {
+    return await Promise.all(article.map(Item => getRate(Item, mediaTayang)));
+  } else {
+    return [await getRate(article, mediaTayang)];
+  }
+}
+
+const createRateArticle = (article) => {
+  const idArtikel = Array.isArray(article) ? article : [article];
+  return { create: idArtikel.map(idArtikel => ({ idArtikel })) };
+}
+
+const createOrderMitra = (OrderMitra) => {
+  const idMitra = Array.isArray(OrderMitra) ? OrderMitra : [OrderMitra];
+  return { create: idMitra.map(id => ({ id })) };
+}
 
 const CreateOrderServ = async (dataOrder) => {
   const customer = await getCustomerByIdServ(dataOrder.idCust);
+  const idUser = await getUserByIdRepo(dataOrder.idUser);
 
-  if (customer != "data notfound") {
-    const data = {
-      idCust: dataOrder.idCust,
-      SalesType: dataOrder.SalesType,
-      camp_name: dataOrder.camp_name,
-      order_no: dataOrder.order_no,
-      order_date: dataOrder.order_date,
-      mtPikiranRakyat: dataOrder.mtPikiranRakyat,
-      period_start: dataOrder.period_start,
-      period_end: dataOrder.period_end,
-      pay_type: dataOrder.pay_type,
-      noMo: '1/A01/291/OTI-CRW/XII/2023',
-    };
+  let data = {
+    id_cust: dataOrder.idCust,
+    Sales_type: dataOrder.SalesType,
+    camp_name: dataOrder.camp_name,
+    order_no: dataOrder.order_no,
+    order_date: dataOrder.order_date,
+    period_start: dataOrder.period_start,
+    period_end: dataOrder.period_end,
+    pay_type: dataOrder.pay_type,
+    id_user: idUser.id,
+    media_tayang: dataOrder.mediaTayang,
+    no_mo: "1/A01/291/OTI-CRW/XII/2023",
+  };
 
-    if (dataOrder.OrderNetwork) {
-      data.OrderNetwork = {
-        create: Array.isArray(dataOrder.OrderNetwork)
-          ? dataOrder.OrderNetwork.map((idNetwork) => ({
-              idNetwork,
-            }))
-          : [{ idNetwork: dataOrder.OrderNetwork }],
-      };
+  if (customer != "data notfound" || idUser) {
+    let totalRate = [];
+
+    if (dataOrder.typeRate === "article") {
+      totalRate = await getTotalRate(dataOrder.rateCard.article, dataOrder.mediaTayang);
+      data.rate_article_cust = createRateArticle(dataOrder.rateCard.article);
     }
 
     if (dataOrder.OrderMitra) {
-      data.OrderMitra = {
-        create: Array.isArray(dataOrder.OrderMitra)
-          ? dataOrder.OrderMitra.map((idMitra) => ({
-              idMitra,
-            }))
-          : [{ idMitra: dataOrder.OrderMitra }],
-      };
-    }
-
-    if (dataOrder.OrderSosmed) {
-      data.OrderSosmed = {
-        create: Array.isArray(dataOrder.OrderSosmed)
-          ? dataOrder.OrderSosmed.map((idSosmed) => ({
-              idSosmed,
-            }))
-          : [{ idSosmed: dataOrder.OrderSosmed }],
-      };
-    }
-
-    if (dataOrder.OrderArtikel) {
-      data.OrderArtikel = {
-        create: {
-          Artikel_1: dataOrder.OrderArtikel.artikel_1,
-          Artikel_2: dataOrder.OrderArtikel.artikel_2,
-        },
-      };
+      data.OrderMitra = createOrderMitra(dataOrder.OrderMitra);
     }
 
     if (dataOrder.pay_type === "cash") {
+      const total = totalRate.reduce((a, b) => a + b, 0)
+      const discountAmount = (dataOrder.payment.diskon / 100) * total;
+      const finalPrice = total - discountAmount;
       data.payCash = {
         create: {
-          total: dataOrder.payment.total,
+          total: total,
           tempo: dataOrder.payment.tempo,
           diskon: dataOrder.payment.diskon,
+          finalPrice: finalPrice,
         },
       };
     }
-
-    if (dataOrder.pay_type === "barter") {
-      data.barter = {
-        create: {
-          nilai: dataOrder.payment.nilaiBarter,
-          tempo: dataOrder.payment.tempo,
-          diskon: dataOrder.payment.diskon,
-          barang: dataOrder.payment.barang,
-        },
-      };
-    }
-
-    if (dataOrder.pay_type === "semi_barter") {
-      data.semiBarter = {
-        create: {
-          nilaiBarter: dataOrder.payment.nilaiBarter,
-          tempoBarter: dataOrder.payment.tempoBarter,
-          diskon: dataOrder.payment.diskon,
-          nilaiCash: dataOrder.payment.nilaiCash,
-          tempoCash: dataOrder.payment.tempoCash,
-          itemBarang: dataOrder.payment.itemBarang,
-        },
-      };
-    }
-
-    if (dataOrder.pay_type === "kredit") {
-      data.kredit = {
-        create: {
-          nilaiKredit: dataOrder.payment.nilaiKredit,
-          tempo: dataOrder.payment.tempoKredit,
-          diskon: dataOrder.payment.diskon,
-        },
-      };
-    }
-
-    if (dataOrder.pay_type === "termin") {
-      data.termin = {
-        create: {
-          termin_1: dataOrder.payment.termin_1,
-          tempo_1: dataOrder.payment.tempo_1,
-          termin_2: dataOrder.payment.termin_2,
-          tempo_2: dataOrder.payment.tempo_2,
-          termin_3: dataOrder.payment.termin_3,
-          tempo_3: dataOrder.payment.tempo_3,
-          diskon: dataOrder.payment.diskon,
-        },
-      };
-    }
-    if (dataOrder.pay_type === "deposit") {
-      data.deposit = {
-        create: {
-          totalDeposit: dataOrder.payment.deposit,
-          minDeposit: dataOrder.payment.minDeposit,
-          status: "aktif",
-        },
-      };
-    }
-
-    const dataOti = {
-      sosmed: dataOrder.OrderSosmed,
-      artikel: dataOrder.OrderArtikel,
-    };
 
     const order = await CreateOrderRepo(data);
-   
+    const dataOti = {
+      idOrder: order.id,
+      artikel: dataOrder.rateCard.article
+    }
     await createOti(order.id, dataOti);
 
     return Response(200, order, "sukses");
@@ -158,18 +91,14 @@ const CreateOrderServ = async (dataOrder) => {
   }
 };
 
-const CreateNetworkServ = async (name, status) => {
-  return await CreateNetworkRepo(name, status);
-};
+
+
+
+
 
 const CreateMitraServ = async (name, status) => {
   return await CreateMitraRepo(name, status);
 };
-const CreateSosmedServ = async (name, status) => {
-  return await CreateSosmedRepo(name, status);
-};
-
-
 
 const UploadMitra = async (data) => {
   const dataRest = await Promise.all(
@@ -178,7 +107,7 @@ const UploadMitra = async (data) => {
     })
   );
   return dataRest;
-}
+};
 
 const GetallOrderServ = async (pageNumber, pageSize) => {
   const order = await GetAllOrderRepo(pageNumber, pageSize);
@@ -186,21 +115,10 @@ const GetallOrderServ = async (pageNumber, pageSize) => {
 
   const orderResponse = await Promise.all(
     order.map(async (item) => {
-      const network = await Promise.all(
-        item.OrderNetwork.map(async (NetItem) => {
-          return await GetNetworkByIdRepo(NetItem.idNetwork);
-        })
-      );
-
+    
       const mitra = await Promise.all(
         item.OrderMitra.map(async (MitItem) => {
           return await GetMitraByIdRepo(MitItem.idMitra);
-        })
-      );
-
-      const sosmed = await Promise.all(
-        item.OrderSosmed.map(async (SosItem) => {
-          return await GetSosmedByIdRepo(SosItem.idSosmed);
         })
       );
 
@@ -218,13 +136,7 @@ const GetallOrderServ = async (pageNumber, pageSize) => {
           name: item.costumer.name,
         },
         mediaTayang: {
-          ...(item.mtPikiranRakyat
-            ? { pikiranRakyat: item.mtPikiranRakyat }
-            : {}),
-          ...(sosmed.length ? { sosmed: sosmed } : {}),
-          ...(network.length ? { network: network } : {}),
           ...(mitra.length ? { mitra: mitra } : {}),
-          ...(item.OrderArtikel.length ? { artikel: item.OrderArtikel } : {}),
         },
         payment: {
           ...(item.payCash.length ? { cash: item.payCash } : {}),
@@ -270,46 +182,21 @@ const createOti = async (idOrder, dataProps) => {
   const month = romawi(dateNow.getMonth() + 1);
 
   await Promise.all(
-    dataProps.sosmed.map(async (sosItem, index) => {
-      const sosmedData = await GetSosmedByIdRepo(sosItem);
-      const count = await countOti("Media Sosial");
-     
-      const formattedCount = String(count + index + 1).padStart(3, '0');
+    dataProps.artikel.map(async (Item, index) => {
+      const artikel = await getartikelByIdServ(Item);
+      const count = await countOti();
+
+      const formattedCount = String(count + index + 1).padStart(3, "0");
       const dataRest = {
         idOrder: idOrder,
-        product: "Media Sosial",
-        sub: sosmedData.name,
+        product: "Artikel",
+        sub: artikel.name,
         oti: `${formattedCount}/MS03/291/OTI-CRW/${month}/${year}`,
       };
       await createOtiRepo(dataRest);
     })
   );
 
-  if(dataProps.artikel.artikel_1){
-    const count = await countOti("Artikel");
-    const formattedCount = String(count + index + 1).padStart(3, '0');
-      const dataRest = {
-        idOrder: idOrder,
-        product: "Artikel",
-        sub: 'Artikel & Content',
-        oti: `${formattedCount}/A01/291/OTI-CRW/${month}/${year}`,
-      };
-      
-      await createOtiRepo(dataRest);
-  }
-  
-  if(dataProps.artikel.artikel_2){
-    const count = await countOti("Artikel");
-    const formattedCount = String(count + index + 1).padStart(3, '0');
-      const dataRest = {
-        idOrder: idOrder,
-        product: "Artikel",
-        sub: 'Artikel & Content Nework',
-        oti: `${formattedCount}/A01/291/OTI-CRW/${month}/${year}`,
-      };
-      
-      await createOtiRepo(dataRest);
-  }
 };
 
 const GetorderByIdServ = async (id) => {
@@ -368,13 +255,9 @@ const GetorderByIdServ = async (id) => {
 };
 
 module.exports = {
-  GetMediaTayangServ,
   CreateOrderServ,
-  CreateNetworkServ,
   CreateMitraServ,
-  CreateSosmedServ,
   GetallOrderServ,
   GetorderByIdServ,
   UploadMitra,
- 
 };

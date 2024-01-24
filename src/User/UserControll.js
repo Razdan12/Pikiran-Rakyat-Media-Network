@@ -32,6 +32,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log('ini jalan');
   const { email, password } = req.body;
   try {
     const response = await LoginUser(email, password)
