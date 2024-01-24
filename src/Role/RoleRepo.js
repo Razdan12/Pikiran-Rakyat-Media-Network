@@ -15,4 +15,11 @@ const getAllRole = async () => {
     return await prisma.role.findMany()
 }
 
-module.exports = { addRole, totalRole, getAllRole };
+const getRoleByid = async (id) => {
+  return await prisma.role.findUnique({
+    where: {
+      id
+    }
+  })
+}
+module.exports = { addRole, totalRole, getAllRole,getRoleByid };

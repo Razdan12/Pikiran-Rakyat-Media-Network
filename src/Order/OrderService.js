@@ -13,6 +13,7 @@ const {
 
 const getRate = async (Item, mediaTayang) => {
   const artikel = await getartikelByIdServ(Item);
+  console.log(artikel);
   return mediaTayang === 'PRMN' ? artikel.prmn : artikel.mitra;
 }
 
@@ -31,13 +32,12 @@ const createRateArticle = (article) => {
 
 const createOrderMitra = (OrderMitra) => {
   const idMitra = Array.isArray(OrderMitra) ? OrderMitra : [OrderMitra];
-  return { create: idMitra.map(id => ({ id })) };
+  return { create: idMitra.map(idMitra => ({ idMitra })) };
 }
 
 const CreateOrderServ = async (dataOrder) => {
   const customer = await getCustomerByIdServ(dataOrder.idCust);
   const idUser = await getUserByIdRepo(dataOrder.idUser);
-
   let data = {
     id_cust: dataOrder.idCust,
     Sales_type: dataOrder.SalesType,
@@ -68,6 +68,7 @@ const CreateOrderServ = async (dataOrder) => {
       const total = totalRate.reduce((a, b) => a + b, 0)
       const discountAmount = (dataOrder.payment.diskon / 100) * total;
       const finalPrice = total - discountAmount;
+
       data.payCash = {
         create: {
           total: total,
@@ -91,19 +92,16 @@ const CreateOrderServ = async (dataOrder) => {
   }
 };
 
-
-
-
-
-
 const CreateMitraServ = async (name, status) => {
   return await CreateMitraRepo(name, status);
 };
 
 const UploadMitra = async (data) => {
+  
   const dataRest = await Promise.all(
     data.map((Item) => {
-      return CreateMitraRepo(Item.nama);
+     
+      return CreateMitraRepo(Item.name, Item.status);
     })
   );
   return dataRest;

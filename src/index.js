@@ -26,7 +26,7 @@ const app = express();
 app.use(cors(corsOptions));
 
 dotenv.config();
-const port = process.env.PORT || 443; // default to 443 if PORT not set
+const port = process.env.PORT || 9090; // default to 443 if PORT not set
 
 app.use(express.json({ limit: '1gb' }));
 app.use(express.urlencoded({ limit: '1gb', extended: true }));

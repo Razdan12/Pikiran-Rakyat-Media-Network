@@ -6,7 +6,7 @@ const GetOtiServ = async (pageNumber, pageSize) => {
   const otiRest = await getOtiRepo(pageNumber, pageSize);
   const oti = await Promise.all(
     otiRest.map(async (Item) => {
-      const idCust = Item.order.idCust;
+      const idCust = Item.order.id_cust;
       const customer = await getCustomerByIdServ(idCust);
       return {
         idOrder: Item.idOrder,

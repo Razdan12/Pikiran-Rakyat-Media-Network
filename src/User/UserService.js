@@ -1,8 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { createUserRepo, Login } = require("./UserRepo");
+const { createUserRepo, Login, getAllUserRepo } = require("./UserRepo");
 const { Response } = require("../config/Response");
+const { getRoleByid } = require("../Role/RoleRepo");
 
 dotenv.config();
 
@@ -58,4 +59,20 @@ const LoginUser = async (email, password) => {
   return Response(200, data , "email invalid");
 };
 
-module.exports = { createUserServ, LoginUser };
+const getAllUserServ = async () => {
+  const user = await getAllUserRepo()
+  const userRest = await Promise.all(
+    user.map(async (item) => {
+      const role = await getRoleByid(item.role_id)
+      return {
+        id: item.id,
+        name: item.name,
+        email: item.email,
+        role: role.role
+      }
+    })
+  )
+  return userRest
+}
+
+module.exports = { createUserServ, LoginUser , getAllUserServ};

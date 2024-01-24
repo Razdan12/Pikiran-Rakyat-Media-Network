@@ -1,9 +1,8 @@
 const express = require("express");
-const { GetMediaTayangServ, CreateOrderServ, CreateNetworkServ, CreateMitraServ, CreateSosmedServ, GetallOrderServ, GetorderByIdServ, UploadMitra } = require("./OrderService");
+const { GetMediaTayangServ, CreateOrderServ,  CreateMitraServ,  GetallOrderServ, GetorderByIdServ, UploadMitra } = require("./OrderService");
 const { AuthAll } = require("../config/Auth");
 const multer = require("multer");
 const readXlsxFile = require("read-excel-file/node");
-const { CreateMitraRepo } = require("./OrderRepo");
 const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
@@ -78,7 +77,8 @@ router.post("/upload/mitra", upload.single("file"), async (req, res, next) => {
     const rows = await readXlsxFile(req.file.path);
     const MitraPromise = rows.slice(1).map((row) => {
       return {
-        nama: row[1]
+        name: row[1],
+        status: true
       };
     });
 

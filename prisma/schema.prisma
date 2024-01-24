@@ -80,6 +80,8 @@ model Mitra {
   name       String
   status     Boolean?
   OrderMitra OrderMitra[]
+  created_At DateTime?    @default(now())
+  updated_At DateTime?    @updatedAt
 }
 
 model OrderMitra {
@@ -101,11 +103,11 @@ model rate_article_cust {
 }
 
 model payCash {
-  idOrder         String
-  order           Order?   @relation(fields: [idOrder], references: [id])
-  total           Int
-  tempo           DateTime
-  diskon          Int?
+  idOrder    String
+  order      Order?   @relation(fields: [idOrder], references: [id])
+  total      Int
+  tempo      DateTime
+  diskon     Int?
   finalPrice Int?
 
   @@id([idOrder])

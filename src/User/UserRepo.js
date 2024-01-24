@@ -19,11 +19,17 @@ const Login = async (email) => {
 }
 
 const getUserByIdRepo = async (id) => {
-  return await prisma.user.findUnique({
+  const data = await prisma.user.findUnique({
     where: {
       id
     }
   })
+  
+return data
 }
 
-module.exports = { createUserRepo ,Login, getUserByIdRepo};
+
+const getAllUserRepo = async () => {
+  return await prisma.user.findMany()
+}
+module.exports = { createUserRepo ,Login, getUserByIdRepo, getAllUserRepo};

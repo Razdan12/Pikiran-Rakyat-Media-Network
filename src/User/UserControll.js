@@ -1,5 +1,6 @@
 const express = require("express");
-const { createUserServ, LoginUser } = require("./UserService");
+const { createUserServ, LoginUser, getAllUserServ } = require("./UserService");
+const { AuthSDAdmin } = require("../config/Auth");
 
 const router = express.Router();
 
@@ -32,7 +33,6 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  console.log('ini jalan');
   const { email, password } = req.body;
   try {
     const response = await LoginUser(email, password)
@@ -43,4 +43,13 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/all", async (req, res) => {
+  try {
+    const response = await getAllUserServ()
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
 module.exports = router;
