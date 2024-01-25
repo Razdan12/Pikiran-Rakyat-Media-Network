@@ -2,7 +2,7 @@ const { getCustomerByIdServ } = require("../Cutomer/CustService");
 const { createOtiRepo, countOti } = require("../Oti/OtiRepo");
 const { getUserByIdRepo } = require("../User/UserRepo");
 const { Response } = require("../config/Response");
-const { getartikelByIdServ } = require("../rateCard/rateServ");
+const { getartikelByIdServ, getSosmedByIdServ, getOtherByIdServ, getCpdByIdServ } = require("../rateCard/rateServ");
 const {
   CreateOrderRepo,
   CreateMitraRepo,
@@ -11,17 +11,48 @@ const {
   getCountOrder,
 } = require("./OrderRepo");
 
-const getRate = async (Item, mediaTayang) => {
+const getRateArtikel = async (Item, mediaTayang) => {
   const artikel = await getartikelByIdServ(Item);
-  console.log(artikel);
   return mediaTayang === 'PRMN' ? artikel.prmn : artikel.mitra;
 }
 
+const getRateSosmed = async (id, mediaTayang) => {
+ 
+  const sosmed = await getSosmedByIdServ(id)
+  return mediaTayang === 'facebook' ? sosmed.facebook : mediaTayang === 'instagram' ? sosmed.instagram : sosmed.rate
+}
+
+const getRateOther = async (id) => {
+  const other = await getOtherByIdServ(id)
+  return other.rate
+}
+
+const getRateCpd = async (id) => {
+  const other = await getCpdByIdServ(id)
+  return other.rate
+}
+
+
+
 const getTotalRate = async (article, mediaTayang) => {
   if (Array.isArray(article)) {
-    return await Promise.all(article.map(Item => getRate(Item, mediaTayang)));
+    return await Promise.all(article.map(Item => getRateArtikel(Item, mediaTayang)));
   } else {
-    return [await getRate(article, mediaTayang)];
+    return [await getRateArtikel(article, mediaTayang)];
+  }
+}
+const getTotalRateSosmed = async (id, data) => {
+  if (Array.isArray(id)) {
+    return await Promise.all(id.map(Item => getRateSosmed(Item, data)));
+  } else {
+    return [await getRateSosmed(id, data)];
+  }
+}
+const getTotalRateOther = async (id) => {
+  if(Array.isArray(id)){
+    return await Promise.all(id.map(Item => getRateOther(Item)))
+  } else {
+    return [await getRateOther(id)]
   }
 }
 
@@ -30,12 +61,23 @@ const createRateArticle = (article) => {
   return { create: idArtikel.map(idArtikel => ({ idArtikel })) };
 }
 
+const createRateSosmed = (sosmed) => {
+  const idSosmed = Array.isArray(sosmed) ? sosmed : [sosmed];
+  return { create: idSosmed.map(idSosmed => ({ idSosmed })) };
+}
+
+const createRateOther = (other) => {
+  const idOther = Array.isArray(other) ? other : [other]
+  return {create: idOther.map(idOther => ({idOther}))}
+}
+
 const createOrderMitra = (OrderMitra) => {
   const idMitra = Array.isArray(OrderMitra) ? OrderMitra : [OrderMitra];
   return { create: idMitra.map(idMitra => ({ idMitra })) };
 }
 
 const CreateOrderServ = async (dataOrder) => {
+  console.log(dataOrder);
   const customer = await getCustomerByIdServ(dataOrder.idCust);
   const idUser = await getUserByIdRepo(dataOrder.idUser);
   let data = {
@@ -56,8 +98,21 @@ const CreateOrderServ = async (dataOrder) => {
     let totalRate = [];
 
     if (dataOrder.typeRate === "article") {
+      console.log('jalan artikel 1');
       totalRate = await getTotalRate(dataOrder.rateCard.article, dataOrder.mediaTayang);
       data.rate_article_cust = createRateArticle(dataOrder.rateCard.article);
+    }
+
+    if (dataOrder.typeRate === "sosmed") {
+      console.log('jalan sosmed 1');
+      totalRate = await getTotalRateSosmed(dataOrder.rateCard.sosmed, dataOrder.mediaTayang)
+      data.rate_sosmed_cust = createRateSosmed(dataOrder.rateCard.sosmed);
+      console.log();
+    }
+
+    if (dataOrder.typeRate === "other") {
+      totalRate = await getTotalRateOther(dataOrder.rateCard.other)
+      data.rate_other_cust = createRateOther(dataOrder.rateCard.other)
     }
 
     if (dataOrder.OrderMitra) {
@@ -82,7 +137,8 @@ const CreateOrderServ = async (dataOrder) => {
     const order = await CreateOrderRepo(data);
     const dataOti = {
       idOrder: order.id,
-      artikel: dataOrder.rateCard.article
+      type: dataOrder.typeRate,
+      data: dataOrder.typeRate === 'article' ? dataOrder.rateCard.article : dataOrder.rateCard.sosmed
     }
     await createOti(order.id, dataOti);
 
@@ -180,21 +236,30 @@ const createOti = async (idOrder, dataProps) => {
   const month = romawi(dateNow.getMonth() + 1);
 
   await Promise.all(
-    dataProps.artikel.map(async (Item, index) => {
-      const artikel = await getartikelByIdServ(Item);
+    dataProps.data.map(async (Item, index) => {
+      let data = undefined
+      if(dataProps.type === 'article'){
+        const artikel = await getartikelByIdServ(Item);
+        data = artikel
+      }
+      if(dataProps.type === 'sosmed'){
+        const artikel = await getSosmedByIdServ(Item);
+        data = artikel
+      }
       const count = await countOti();
 
       const formattedCount = String(count + index + 1).padStart(3, "0");
       const dataRest = {
         idOrder: idOrder,
-        product: "Artikel",
-        sub: artikel.name,
+        product: dataProps.type,
+        sub: data.name,
         oti: `${formattedCount}/MS03/291/OTI-CRW/${month}/${year}`,
       };
       await createOtiRepo(dataRest);
     })
   );
-
+ 
+ 
 };
 
 const GetorderByIdServ = async (id) => {

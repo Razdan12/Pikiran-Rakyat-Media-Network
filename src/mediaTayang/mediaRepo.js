@@ -31,11 +31,33 @@ const getAllMtraRepo = async() => {
   return await prisma.mitra.findMany()
 }
 
+const editMitra = async(id, data) => {
+  return prisma.mitra.update({
+    where: {
+      id
+    },
+    data
+  })
+}
+
+const deleteMitraRepo = async(id) => {
+  return prisma.mitra.update({
+    where: {
+      id
+    },
+    data : {
+      is_deleted : true
+    }
+  })
+}
+
 module.exports = {
 
   getMitraRepo,
   totalMitra,
   findMitra,
-  getAllMtraRepo
+  getAllMtraRepo,
+  editMitra,
+  deleteMitraRepo
  
 };

@@ -32,4 +32,15 @@ return data
 const getAllUserRepo = async () => {
   return await prisma.user.findMany()
 }
-module.exports = { createUserRepo ,Login, getUserByIdRepo, getAllUserRepo};
+
+const editUser = async (id, data) => {
+  return await prisma.user.update({
+    where : {
+      id
+    },
+    data
+  })
+
+}
+
+module.exports = { createUserRepo ,Login, getUserByIdRepo, getAllUserRepo, editUser};

@@ -10,6 +10,9 @@ const {
   getRateOtherServ,
   getAllCpdServ,
   getAllCpmServ,
+  editartikelServ,
+  getartikelByIdServ,
+  deleteArticleServ,
 } = require("./rateServ");
 const router = express.Router();
 
@@ -42,6 +45,50 @@ router.get("/article/all", async (req, res) => {
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 });
+
+router.patch("/article/edit-by-id/:id", async (req, res) => {
+  const {id} = req.params
+  const { name, prmn, mitra, note, customPricePrmn, customPriceMitra } =
+    req.body;
+  const data = {
+    name,
+    prmn,
+    mitra,
+    note,
+    customPricePrmn,
+    customPriceMitra,
+  };
+  try {
+
+    const response = await editartikelServ(id, data);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
+
+router.get("/article/by-id/:id", async (req, res) => {
+  const {id} = req.params
+  try {
+    const response = await getartikelByIdServ(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
+
+router.delete("/article/delete/:id", async (req, res) => {
+  const {id} = req.params
+  try {
+    const response = await deleteArticleServ(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
 
 router.post("/sosmed/create/meta", async (req, res) => {
   const { name, instagram, facebook, note,  } = req.body;

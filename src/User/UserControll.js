@@ -1,5 +1,5 @@
 const express = require("express");
-const { createUserServ, LoginUser, getAllUserServ } = require("./UserService");
+const { createUserServ, LoginUser, getAllUserServ, editUserServ } = require("./UserService");
 const { AuthSDAdmin } = require("../config/Auth");
 
 const router = express.Router();
@@ -47,6 +47,22 @@ router.get("/all", async (req, res) => {
   try {
     const response = await getAllUserServ()
     return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
+
+router.patch("/edit-by-id/:id", async (req, res) => {
+  const {id} = req.params
+  const {name, role} = req.body
+  const data = {
+    name,
+    role
+  }
+  try {
+    const response = await editUserServ(id, data)
+    return res.status(201).json(response.data);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });

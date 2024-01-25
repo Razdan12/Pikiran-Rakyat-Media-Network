@@ -73,6 +73,10 @@ model Order {
   deposit           payDeposit[]
   oti               OrderTayangIklan[]
   rate_article_cust rate_article_cust[]
+  rate_sosmed_cust  rate_sosmed_cust[]
+  rate_other_cust   rate_other_cust[]
+  rate_cpd_cust     rate_cpd_cust[]
+  rate_cpm_cust     rate_cpm_cust[]
 }
 
 model Mitra {
@@ -80,6 +84,7 @@ model Mitra {
   name       String
   status     Boolean?
   OrderMitra OrderMitra[]
+  is_deleted Boolean?
   created_At DateTime?    @default(now())
   updated_At DateTime?    @updatedAt
 }
@@ -100,6 +105,42 @@ model rate_article_cust {
   artikel   rate_article? @relation(fields: [idArtikel], references: [id])
 
   @@id([idOrder, idArtikel])
+}
+
+model rate_sosmed_cust {
+  idOrder  String
+  idSosmed String
+  order    Order?       @relation(fields: [idOrder], references: [id])
+  sosmed   rate_sosmed? @relation(fields: [idSosmed], references: [id])
+
+  @@id([idOrder, idSosmed])
+}
+
+model rate_other_cust {
+  idOrder String
+  idOther String
+  order   Order?              @relation(fields: [idOrder], references: [id])
+  other   rate_other_content? @relation(fields: [idOther], references: [id])
+
+  @@id([idOrder, idOther])
+}
+
+model rate_cpd_cust {
+  idOrder String
+  idCpd   String
+  order   Order?    @relation(fields: [idOrder], references: [id])
+  cpd     rate_cpd? @relation(fields: [idCpd], references: [id])
+
+  @@id([idOrder, idCpd])
+}
+
+model rate_cpm_cust {
+  idOrder String
+  idCpm   String
+  order   Order?    @relation(fields: [idOrder], references: [id])
+  cpm     rate_cpm? @relation(fields: [idCpm], references: [id])
+
+  @@id([idOrder, idCpm])
 }
 
 model payCash {
@@ -177,10 +218,10 @@ model OrderTayangIklan {
   product String?
   sub     String?
   oti     String?
+  createdAt             DateTime?           @default(now())
+  updatedAt             DateTime?           @updatedAt
   order   Order?  @relation(fields: [idOrder], references: [id])
 }
-
-// update
 
 model rate_article {
   id                    String              @id @default(cuid())
@@ -190,37 +231,42 @@ model rate_article {
   is_custom_price_prmn  Boolean?
   is_custom_price_mitra Boolean?
   note                  String?
+  is_deleted            Boolean?
   createdAt             DateTime?           @default(now())
   updatedAt             DateTime?           @updatedAt
   rate_artikel_cust     rate_article_cust[]
 }
 
 model rate_sosmed {
-  id              String    @id @default(cuid())
-  name            String
-  instagram       Int?
-  facebook        Int?
-  rate            Int?
-  type            String?
-  note            String?
-  is_other        Boolean?
-  is_custom_price Boolean?
-  createdAt       DateTime? @default(now())
-  updatedAt       DateTime? @updatedAt
+  id               String             @id @default(cuid())
+  name             String
+  instagram        Int?
+  facebook         Int?
+  rate             Int?
+  type             String?
+  note             String?
+  is_other         Boolean?
+  is_custom_price  Boolean?
+  is_deleted       Boolean?
+  createdAt        DateTime?          @default(now())
+  updatedAt        DateTime?          @updatedAt
+  rate_sosmed_cust rate_sosmed_cust[]
 }
 
 model rate_other_content {
-  id              String    @id @default(cuid())
+  id              String            @id @default(cuid())
   name            String
   rate            Int?
   note            String?
   is_custom_price Boolean?
-  createdAt       DateTime? @default(now())
-  updatedAt       DateTime? @updatedAt
+  is_deleted      Boolean?
+  createdAt       DateTime?         @default(now())
+  updatedAt       DateTime?         @updatedAt
+  rate_other_cust rate_other_cust[]
 }
 
 model rate_cpd {
-  id              String    @id @default(cuid())
+  id              String          @id @default(cuid())
   name            String
   type            String?
   size            String?
@@ -230,17 +276,21 @@ model rate_cpd {
   rate            Int?
   is_other        Boolean?
   is_custom_price Boolean?
-  createdAt       DateTime? @default(now())
-  updatedAt       DateTime? @updatedAt
+  is_deleted      Boolean?
+  createdAt       DateTime?       @default(now())
+  updatedAt       DateTime?       @updatedAt
+  rate_cpd_cust   rate_cpd_cust[]
 }
 
 model rate_cpm {
-  id              String    @id @default(cuid())
+  id              String          @id @default(cuid())
   name            String
   type            String?
   size            String?
   rate            Int?
+  is_deleted      Boolean?
   is_custom_price Boolean?
-  createdAt       DateTime? @default(now())
-  updatedAt       DateTime? @updatedAt
+  createdAt       DateTime?       @default(now())
+  updatedAt       DateTime?       @updatedAt
+  rate_cpm_cust   rate_cpm_cust[]
 }

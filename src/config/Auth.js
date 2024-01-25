@@ -21,7 +21,7 @@ const AuthSDAdmin = (req, res, next) => {
       res.status(401).json({ error: 'Token expired' });
       return;
     }
-    if (req.user.role !== 1 ) {
+    if (req.user.role !== 'admin' ) {
       res.status(401).json({ error: 'Invalid role admin' });
       return;
     }

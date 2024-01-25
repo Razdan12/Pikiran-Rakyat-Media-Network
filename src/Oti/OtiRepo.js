@@ -17,7 +17,10 @@ const getOtiRepo = async (pageNumber, pageSize) => {
         take: pageSize,
         include: {
             order: true
-        }
+        },
+        orderBy: {
+            createdAt: "desc",
+           },
     })
 }
 const contAllOti = async () => {

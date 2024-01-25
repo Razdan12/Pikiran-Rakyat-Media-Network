@@ -80,6 +80,78 @@ const getArtikrelByIdRepo = async (id) => {
   return artikel
 }
 
+const getSosmedByIdRepo = async (id) => {
+  return await prisma.rate_sosmed.findUnique({
+    where: {
+      id
+    }
+  })
+}
+
+const getOtherByIdRepo = async (id) => {
+  return await prisma.rate_other_content.findUnique({
+    where: {
+      id
+    }
+  })
+}
+
+const getCpdByIdRepo = async (id) => {
+  return await prisma.rate_cpd.findUnique({
+    where: {
+      id
+    }
+  })
+}
+
+const getCpmByIdRepo = async (id) => {
+  return await prisma.rate_cpm.findUnique({
+    where: {
+      id
+    }
+  })
+}
+
+const editArticel = async (id, data) => {
+    return await prisma.rate_article.update({
+      where: {
+        id
+      },
+      data
+    })
+}
+
+const editSosmed = async (id, data) => {
+  return await prisma.rate_sosmed.update({
+    where: {
+      id
+    },
+    data
+  })
+}
+
+const deleteArticleRepo = async (id) => {
+  return prisma.rate_article.update({
+    where: {
+      id
+    },
+    data: {
+      is_deleted: true
+    }
+  })
+}
+
+const deleteSosmedRepo = async (id) => {
+  return prisma.rate_sosmed.update({
+    where: {
+      id
+    },
+    data: {
+      is_deleted: true
+    }
+  })
+}
+
 module.exports = {
   addArticleRepo,
   addRateSosmedRepo,
@@ -91,5 +163,13 @@ module.exports = {
   getRateOtherRepo,
   getCpdRepo,
   getAllCpmRepo,
-  getArtikrelByIdRepo
+  getArtikrelByIdRepo,
+  getSosmedByIdRepo,
+  getOtherByIdRepo,
+  getCpdByIdRepo,
+  getCpmByIdRepo,
+  editArticel,
+  deleteArticleRepo,
+  editSosmed,
+  deleteSosmedRepo
 };

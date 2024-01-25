@@ -1,5 +1,5 @@
 
-const { getMitraRepo,totalMitra, findMitra, getAllMtraRepo, } = require("./mediaRepo");
+const { getMitraRepo,totalMitra, findMitra, getAllMtraRepo, editMitra, } = require("./mediaRepo");
 
 
 const getMitra = async (pageNumber, pageSize) => {
@@ -23,10 +23,19 @@ const getMitraServ = async () => {
     return await getAllMtraRepo()
 }
 
+const editMitraServ = async (id, data) => {
+    const dataRest = {
+        name: data.name,
+        status: data.status
+    }
+    return await editMitra(id, dataRest)
+}
+
 module.exports = {
     getMitra,
     findMitraServ,
-    getMitraServ
+    getMitraServ,
+    editMitraServ
   
   };
   

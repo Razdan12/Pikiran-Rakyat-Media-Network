@@ -1,6 +1,6 @@
 const express = require("express");
 const { AuthAll, AuthSDAdmin } = require("../config/Auth");
-const { getMitra,  findMitraServ, getMitraServ } = require("./mediaServ");
+const { getMitra,  findMitraServ, getMitraServ, editMitraServ } = require("./mediaServ");
 
 const router = express.Router();
 
@@ -31,6 +31,22 @@ router.get("/mitra/find-by-name", async(req, res) => {
 router.get("/mitra/all/drop", async(req, res) => {
     try {
         const response = await getMitraServ()
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+    }
+})
+
+router.patch("/mitra/edit-by-id/:id", async(req, res) => {
+    const {id} = req.params
+    const {name, status} = req.body
+    const data = {
+        name,
+        status
+    }
+    try {
+        const response = await editMitraServ(id, data)
         return res.status(200).json(response);
     } catch (error) {
         console.log(error);
