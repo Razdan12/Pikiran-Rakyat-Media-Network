@@ -130,6 +130,15 @@ const editSosmed = async (id, data) => {
   })
 }
 
+const editOther = async (id, data) => {
+  return await prisma.rate_other_content.update({
+    where: {
+      id
+    },
+    data
+  })
+}
+
 const deleteArticleRepo = async (id) => {
   return prisma.rate_article.update({
     where: {
@@ -152,6 +161,16 @@ const deleteSosmedRepo = async (id) => {
   })
 }
 
+const deleteOtherRepo = async (id) => {
+  return prisma.rate_other_content.update({
+    where: {
+      id
+    },
+    data: {
+      is_deleted: true
+    }
+  })
+}
 module.exports = {
   addArticleRepo,
   addRateSosmedRepo,
@@ -171,5 +190,7 @@ module.exports = {
   editArticel,
   deleteArticleRepo,
   editSosmed,
-  deleteSosmedRepo
+  deleteSosmedRepo,
+  editOther,
+  deleteOtherRepo
 };

@@ -16,6 +16,10 @@ const {
   getCpmByIdRepo,
   editArticel,
   deleteArticleRepo,
+  editSosmed,
+  deleteSosmedRepo,
+  editOther,
+  deleteOtherRepo,
 } = require("./rateRepo");
 
 const addArticleServ = async (data) => {
@@ -109,10 +113,10 @@ const getAllArticleServ = async () => {
 };
 
 const getRateSosmed = async () => {
-  const meta = await getRateSosmedRepo(false);
-  const other = await getRateSosmedRepo(true);
-  // meta = meta.filter((item) => !item.is_deleted);
-  // other = other.filter((item) => !item.is_deleted);
+  let meta = await getRateSosmedRepo(false);
+  let other = await getRateSosmedRepo(true);
+  meta = meta.filter((item) => !item.is_deleted);
+  other = other.filter((item) => !item.is_deleted);
   const data = {
     meta,
     other,
@@ -121,7 +125,8 @@ const getRateSosmed = async () => {
 };
 
 const getRateOtherServ = async () => {
-  const other = await getRateOtherRepo();
+  let other = await getRateOtherRepo();
+  other = other.filter((item) => !item.is_deleted);
   return other;
 };
 
@@ -180,6 +185,36 @@ const deleteArticleServ = async (id) => {
   return await deleteArticleRepo(id);
 };
 
+const editSosmedServ = async (id, data) => {
+  const sosmed = {
+    name: data.name,
+    instagram: data.instagram,
+    facebook: data.facebook,
+    rate: data.rate,
+    note: data.note
+  }
+
+  return await editSosmed(id, sosmed)
+}
+
+const deleteSosmedServ = async (id) => {
+  return await deleteSosmedRepo(id)
+}
+
+const editOtherServ = async (id, data) => {
+  const other = {
+    name: data.name,
+    rate: data.rate,
+    note: data.note,
+    is_custom_price: data.customPrice
+  }
+  return await editOther(id, other)
+}
+
+const deleteOtherContent = async (id) => {
+  return await deleteOtherRepo(id)
+}
+
 module.exports = {
   addArticleServ,
   addRateSosmedServ,
@@ -198,4 +233,8 @@ module.exports = {
   getCpmByIdServ,
   editartikelServ,
   deleteArticleServ,
+  editSosmedServ,
+  deleteSosmedServ,
+  editOtherServ,
+  deleteOtherContent
 };
