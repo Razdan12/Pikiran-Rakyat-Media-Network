@@ -61,7 +61,6 @@ router.post("/new",  async (req, res) => {
   }
 });
 
-
 router.post("/create/mitra", AuthAll, async (req, res) => {
   const {name, status} = req.body
   try {
@@ -97,7 +96,7 @@ router.get("/data", AuthAll, async (req, res) => {
     const response = await GetallOrderServ(pageNumber, pageSize);
     return res.status(200).json(response);
   } catch (error) {
-    
+    console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 });

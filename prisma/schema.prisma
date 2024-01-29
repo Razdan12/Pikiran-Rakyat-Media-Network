@@ -155,12 +155,13 @@ model payCash {
 }
 
 model payBarter {
-  idOrder String
-  order   Order?    @relation(fields: [idOrder], references: [id])
-  nilai   Int
-  barang  String?
-  tempo   DateTime?
-  diskon  Int?
+  idOrder    String
+  order      Order?    @relation(fields: [idOrder], references: [id])
+  nilai      Int
+  barang     String?
+  tempo      DateTime?
+  diskon     Int?
+  finalPrice Int?
 
   @@id([idOrder])
 }
@@ -173,6 +174,8 @@ model paySemiBarter {
   nilaiCash   Int
   tempoCash   DateTime
   itemBarang  String
+  totalRate   Int
+  finalRate   Int
   diskon      Int?
 
   @@id([idOrder])
@@ -184,6 +187,7 @@ model payKredit {
   nilaiKredit Int
   tempo       DateTime
   diskon      Int?
+  finalRate   Int
 
   @@id([idOrder])
 }
@@ -198,6 +202,7 @@ model payTermin {
   termin_3 Int
   tempo_3  DateTime
   diskon   Int?
+  finalRate   Int
 
   @@id([idOrder])
 }
@@ -213,14 +218,14 @@ model payDeposit {
 }
 
 model OrderTayangIklan {
-  id      String  @id @default(cuid())
-  idOrder String
-  product String?
-  sub     String?
-  oti     String?
-  createdAt             DateTime?           @default(now())
-  updatedAt             DateTime?           @updatedAt
-  order   Order?  @relation(fields: [idOrder], references: [id])
+  id        String    @id @default(cuid())
+  idOrder   String
+  product   String?
+  sub       String?
+  oti       String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  order     Order?    @relation(fields: [idOrder], references: [id])
 }
 
 model rate_article {

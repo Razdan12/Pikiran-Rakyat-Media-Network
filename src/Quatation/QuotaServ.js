@@ -5,7 +5,7 @@ const QuotaDataList = async (id) => {
     const quota = await QuotationCustData(id)
     return {
         camp_name : quota.camp_name,
-        camp_type : quota.SalesType,
+        camp_type : quota.Sales_type,
         period_start : new Date(quota.period_start).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
         period_end : new Date(quota.period_end).toLocaleDateString('id-ID', { month: 'long',  year: 'numeric' }),
         cust_type : quota.costumer.type,
@@ -22,16 +22,16 @@ const getMediaOrderData = async (pageNumber, pageSize) => {
                 return {
                     idOrder : item.idOrder,
                     client_name : item.customer.name,
-                    tgl_order : new Date(item.order_date).toLocaleDateString('id-ID', {month: 'long', day: 'numeric', year: 'numeric'}),
+                    tgl_order : item.order_date,
                     no_quo : item.order_no,
-                    period_start : new Date(item.period_start).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
-                    period_end: new Date(item.period_end).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
+                    period_start : item.period_start,
+                    period_end: item.period_end,
                     media_order : 'mo/2023'
                 }
             })
         )
         
-        
+        console.log(orderResponse);
     return {
         pageNumber : order.pageNumber,
         totalPage: order.totalPage,

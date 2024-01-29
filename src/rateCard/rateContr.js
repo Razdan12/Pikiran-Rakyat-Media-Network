@@ -19,6 +19,12 @@ const {
   editOtherServ,
   getOtherByIdServ,
   deleteOtherContent,
+  editCpdServ,
+  getCpdByIdServ,
+  deleteCpdServ,
+  editCpmServ,
+  getCpmByIdServ,
+  deleteCpmServ,
 } = require("./rateServ");
 const router = express.Router();
 
@@ -182,7 +188,7 @@ router.delete("/sosmed/delete-by-id/:id", async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
-})
+});
 
 router.post("/other-content/create", async (req, res) => {
   const { name, rate, note, customPrice } = req.body;
@@ -218,7 +224,7 @@ router.patch("/other-content/edit/:id", async (req, res) => {
     name,
     rate,
     note,
-    customPrice
+    customPrice,
   };
   try {
     const response = await editOtherServ(id, data);
@@ -227,11 +233,11 @@ router.patch("/other-content/edit/:id", async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
-})
+});
 
 router.get("/other-content/get-by-id/:id", async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     const response = await getOtherByIdServ(id);
     return res.status(200).json(response);
@@ -239,7 +245,8 @@ router.get("/other-content/get-by-id/:id", async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
-})
+});
+
 router.delete("/other-content/delete-by-id/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -249,7 +256,7 @@ router.delete("/other-content/delete-by-id/:id", async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
-})
+});
 router.post("/cpd/create/display", async (req, res) => {
   const { name, type, size, home, detail, section } = req.body;
   const data = {
@@ -292,6 +299,51 @@ router.post("/cpd/create/other", async (req, res) => {
   }
 });
 
+router.patch("/cpd/edit-by-id/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, type, size, home, section, detail, rate, customPrice } =
+    req.body;
+  const data = {
+    name,
+    type,
+    size,
+    home,
+    section,
+    detail,
+    rate,
+    customPrice,
+  };
+  try {
+    const response = await editCpdServ(id, data);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
+
+router.delete("/cpd/delete-by-id/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await deleteCpdServ(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
+
+router.get("/cpd/get-by-id/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await getCpdByIdServ(id)
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
+
 router.get("/cpd/all", async (req, res) => {
   try {
     const response = await getAllCpdServ();
@@ -324,6 +376,48 @@ router.post("/cpm/create", async (req, res) => {
 router.get("/cpm/all", async (req, res) => {
   try {
     const response = await getAllCpmServ();
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
+
+router.patch("/cpm/edit-by-id/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, type, size, rate, customPrice } =
+    req.body;
+  const data = {
+    name,
+    type,
+    size,
+    rate,
+    customPrice,
+  };
+  try {
+    const response = await editCpmServ(id, data);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
+
+router.get("/cpm/get-by-id/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await getCpmByIdServ(id)
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
+
+router.delete("/cpm/delete-by-id/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await deleteCpmServ(id);
     return res.status(200).json(response);
   } catch (error) {
     console.error(error);

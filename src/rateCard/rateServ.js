@@ -20,6 +20,10 @@ const {
   deleteSosmedRepo,
   editOther,
   deleteOtherRepo,
+  editCpdRepo,
+  deleteCpdRepo,
+  editCpmRepo,
+  deleteCpmRepo,
 } = require("./rateRepo");
 
 const addArticleServ = async (data) => {
@@ -131,8 +135,11 @@ const getRateOtherServ = async () => {
 };
 
 const getAllCpdServ = async () => {
-  const cpdDisplay = await getCpdRepo(false);
-  const cpdOther = await getCpdRepo(true);
+  let cpdDisplay = await getCpdRepo(false);
+  let cpdOther = await getCpdRepo(true);
+
+  cpdDisplay = cpdDisplay.filter((item) => !item.is_deleted);
+  cpdOther = cpdOther.filter((item) => !item.is_deleted);
 
   const data = {
     cpdDisplay,
@@ -142,7 +149,8 @@ const getAllCpdServ = async () => {
 };
 
 const getAllCpmServ = async () => {
-  const cpm = await getAllCpmRepo();
+  let cpm = await getAllCpmRepo();
+  cpm = cpm.filter((item) => !item.is_deleted);
   return cpm;
 };
 
@@ -191,29 +199,59 @@ const editSosmedServ = async (id, data) => {
     instagram: data.instagram,
     facebook: data.facebook,
     rate: data.rate,
-    note: data.note
-  }
+    note: data.note,
+  };
 
-  return await editSosmed(id, sosmed)
-}
+  return await editSosmed(id, sosmed);
+};
 
 const deleteSosmedServ = async (id) => {
-  return await deleteSosmedRepo(id)
-}
+  return await deleteSosmedRepo(id);
+};
 
 const editOtherServ = async (id, data) => {
   const other = {
     name: data.name,
     rate: data.rate,
     note: data.note,
-    is_custom_price: data.customPrice
-  }
-  return await editOther(id, other)
-}
+    is_custom_price: data.customPrice,
+  };
+  return await editOther(id, other);
+};
+
+const editCpdServ = async (id, data) => {
+  const cpd = {
+    name: data.name,
+    type: data.type,
+    size: data.size,
+    rate_home: data.home,
+    rate_section: data.section,
+    rate_detail: data.detail,
+    rate: data.rate,
+    is_custom_price: data.customPrice,
+  };
+  return await editCpdRepo(id, cpd);
+};
+const editCpmServ = async (id, data) => {
+  const cpd = {
+    name: data.name,
+    type: data.type,
+    size: data.size,
+    rate: data.rate,
+    is_custom_price: data.customPrice,
+  };
+  return await editCpmRepo(id, cpd);
+};
 
 const deleteOtherContent = async (id) => {
-  return await deleteOtherRepo(id)
-}
+  return await deleteOtherRepo(id);
+};
+const deleteCpdServ = async (id) => {
+  return await deleteCpdRepo(id);
+};
+const deleteCpmServ = async (id) => {
+  return await deleteCpmRepo(id);
+};
 
 module.exports = {
   addArticleServ,
@@ -236,5 +274,9 @@ module.exports = {
   editSosmedServ,
   deleteSosmedServ,
   editOtherServ,
-  deleteOtherContent
+  deleteOtherContent,
+  editCpdServ,
+  deleteCpdServ,
+  editCpmServ,
+  deleteCpmServ,
 };

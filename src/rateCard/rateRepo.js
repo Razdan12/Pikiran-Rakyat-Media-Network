@@ -139,6 +139,23 @@ const editOther = async (id, data) => {
   })
 }
 
+const editCpdRepo = async (id, data) => {
+  return prisma.rate_cpd.update({
+    where: {
+      id
+    },
+    data
+  })
+}
+const editCpmRepo = async (id, data) => {
+  return prisma.rate_cpm.update({
+    where: {
+      id
+    },
+    data
+  })
+}
+
 const deleteArticleRepo = async (id) => {
   return prisma.rate_article.update({
     where: {
@@ -171,6 +188,28 @@ const deleteOtherRepo = async (id) => {
     }
   })
 }
+
+const deleteCpdRepo = async (id) => {
+  return prisma.rate_cpd.update({
+    where: {
+      id
+    },
+    data: {
+      is_deleted: true
+    }
+  })
+}
+const deleteCpmRepo = async (id) => {
+  return prisma.rate_cpm.update({
+    where: {
+      id
+    },
+    data: {
+      is_deleted: true
+    }
+  })
+}
+
 module.exports = {
   addArticleRepo,
   addRateSosmedRepo,
@@ -192,5 +231,9 @@ module.exports = {
   editSosmed,
   deleteSosmedRepo,
   editOther,
-  deleteOtherRepo
+  deleteOtherRepo,
+  editCpdRepo,
+  deleteCpdRepo,
+  editCpmRepo,
+  deleteCpmRepo
 };

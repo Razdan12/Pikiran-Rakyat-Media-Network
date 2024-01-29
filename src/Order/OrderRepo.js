@@ -51,7 +51,15 @@ const GetAllOrderRepo = async (pageNumber, pageSize) => {
       semiBarter: true,
       kredit: true,
       termin: true,
-      deposit: true
+      deposit: true,
+      rate_article_cust : true,
+      rate_sosmed_cust : true,
+      rate_other_cust: true,
+      rate_cpd_cust: true,
+      rate_cpm_cust: true
+    },
+    orderBy: {
+      created_At: "desc"
     }
   })
 }
