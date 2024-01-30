@@ -30,9 +30,11 @@ router.post("/new",  async (req, res) => {
     pay_type,
     OrderMitra,
     typeRate,
-    mediaTayang,
+    opsiMediatayang,
     rateCard,
     payment,
+    mediaTayang
+    
   } = req.body;
 
   const data = {
@@ -49,9 +51,11 @@ router.post("/new",  async (req, res) => {
     typeRate,
     rateCard,
     payment,
+    opsiMediatayang,
     mediaTayang
   };
 
+  console.log('diskon', payment.diskon);
   try {
     const response = await CreateOrderServ(data);
     return res.status(response.status).json(response);

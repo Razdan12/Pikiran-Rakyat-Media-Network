@@ -56,12 +56,8 @@ const getRateOtherRepo = async () => {
     return otherContent
 }
 
-const getCpdRepo = async (status) => {
-    const cpd = await prisma.rate_cpd.findMany({
-        where: {
-            is_other: status
-        }
-    })
+const getCpdRepo = async () => {
+    const cpd = await prisma.rate_cpd.findMany()
     return cpd
 }
 
