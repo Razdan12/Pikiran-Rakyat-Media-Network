@@ -8,6 +8,7 @@ const {
   getCustomerByIdServ,
   getAllCust,
   deleteCustomerServ,
+  editCustomer,
 } = require("./CustService");
 const { AuthAll, AuthSDAdmin } = require("../config/Auth");
 dotenv.config();
@@ -62,7 +63,6 @@ router.get("/all", AuthAll, async (req, res) => {
 });
 
 router.get("/cust", AuthAll, async (req, res) => {
- 
   try {
     const pageNumber = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
@@ -78,7 +78,7 @@ router.get("/cust", AuthAll, async (req, res) => {
 
 router.get("/:id", AuthAll, async (req, res) => {
   const id = req.params.id;
-  
+
   try {
     const response = await getCustomerByIdServ(id);
     res.status(200).json(response);
@@ -89,13 +89,46 @@ router.get("/:id", AuthAll, async (req, res) => {
 
 router.delete("/:id", AuthSDAdmin, async (req, res) => {
   try {
-    const id = req.params.id
-    const response = await deleteCustomerServ(id)
+    const id = req.params.id;
+    const response = await deleteCustomerServ(id);
     res.status(200).json(response);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
-})
+});
+
+router.patch("/edit-cust/:id", AuthSDAdmin, async (req, res) => {
+  const id = req.params.id;
+
+  const {
+    name,
+    contact,
+    phone,
+    email,
+    npwp,
+    address,
+    fincontact,
+    fincontact_phone,
+  } = req.body;
+
+  try {
+    const data = {
+      name,
+      contact,
+      phone,
+      email,
+      npwp,
+      address,
+      fincontact,
+      fincontact_phone,
+    };
+    const response = await editCustomer(id, data);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
 
 module.exports = router;

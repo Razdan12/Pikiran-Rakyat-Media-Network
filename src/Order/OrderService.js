@@ -477,11 +477,6 @@ const createOti = async (idOrder, dataProps) => {
 const GetorderByIdServ = async (id) => {
   const order = await GetOrderByIdRepo(id);
 
-  const network = await Promise.all(
-    order.OrderNetwork.map(async (NetItem) => {
-      return await GetNetworkByIdRepo(NetItem.idNetwork);
-    })
-  );
 
   const mitra = await Promise.all(
     order.OrderMitra.map(async (MitItem) => {
@@ -489,15 +484,9 @@ const GetorderByIdServ = async (id) => {
     })
   );
 
-  const sosmed = await Promise.all(
-    order.OrderSosmed.map(async (SosItem) => {
-      return await GetSosmedByIdRepo(SosItem.idSosmed);
-    })
-  );
-
   return {
     idOrder: order.id,
-    SalesType: order.SalesType,
+    SalesType: order.Sales_type,
     camp_name: order.camp_name,
     order_no: order.order_no,
     order_date: order.order_date,
@@ -508,15 +497,8 @@ const GetorderByIdServ = async (id) => {
       id: order.costumer.id,
       name: order.costumer.name,
     },
-
     mediaTayang: {
-      ...(order.mtPikiranRakyat
-        ? { pikiranRakyat: order.mtPikiranRakyat }
-        : {}),
-      ...(network.length ? { network: network } : {}),
-      ...(sosmed.length ? { sosmed: sosmed } : {}),
       ...(mitra.length ? { mitra: mitra } : {}),
-      ...(order.OrderArtikel.length ? { artikel: order.OrderArtikel } : {}),
     },
 
     payment: {

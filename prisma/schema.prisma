@@ -42,6 +42,7 @@ model Custs {
   img_akta         String?
   img_nib          String?
   img_npwp         String?
+  is_deleted       Boolean?
   createdAt        DateTime? @default(now())
   updatedAt        DateTime? @updatedAt
   order            Order[]
@@ -162,7 +163,7 @@ model payBarter {
   nilai      Int
   barang     String?
   tempo      DateTime?
-   diskon     Float?
+  diskon     Float?
   finalPrice Int?
 
   @@id([idOrder])
@@ -178,7 +179,7 @@ model paySemiBarter {
   itemBarang  String
   totalRate   Int
   finalRate   Int
-   diskon     Float?
+  diskon      Float?
 
   @@id([idOrder])
 }
@@ -188,7 +189,7 @@ model payKredit {
   order       Order?   @relation(fields: [idOrder], references: [id])
   nilaiKredit Int
   tempo       DateTime
-  diskon     Float?
+  diskon      Float?
   finalRate   Int
 
   @@id([idOrder])
@@ -203,7 +204,7 @@ model payTermin {
   tempo_2   DateTime
   termin_3  Int
   tempo_3   DateTime
-  diskon     Float?
+  diskon    Float?
   finalRate Int
 
   @@id([idOrder])
