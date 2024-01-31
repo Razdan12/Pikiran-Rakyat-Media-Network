@@ -8,7 +8,11 @@ const createCustomerRepo = async (dataCust) => {
 };
 
 const getCustomer = async () => {
-  return prisma.custs.findMany();
+  return prisma.custs.findMany({
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
 };
 
 const getCustomerByIdRepo = async (id) => {
@@ -26,18 +30,30 @@ const getCountCustomer = async () => {
 const getCustomerAll = async (pageNumber, pageSize) => {
   return await prisma.custs.findMany({
     skip: (pageNumber - 1) * pageSize,
-    take: pageSize
+    take: pageSize,
+    orderBy: {
+      createdAt: "desc"
+    }
     
   })
 }
 
 const deleteCustomer = async (id) => {
-  console.log();
-  return await prisma.custs.delete({
+  return await prisma.custs.update({
     where: {
       id: id
+    },
+    data:{
+      is_deleted: true
     }
   })
 }
 
-module.exports = { createCustomerRepo, getCustomer, getCustomerByIdRepo, getCustomerAll , getCountCustomer, deleteCustomer};
+const editCustomerRepo = async (id, data) => {
+  return await prisma.custs.update({
+    where: {id},
+    data
+  })
+}
+
+module.exports = { createCustomerRepo, getCustomer, getCustomerByIdRepo, getCustomerAll , getCountCustomer, deleteCustomer, editCustomerRepo};

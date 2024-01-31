@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
+router.get("/all", AuthSDAdmin, async (req, res) => {
   try {
     const response = await getAllUserServ()
     return res.status(200).json(response);
@@ -53,7 +53,7 @@ router.get("/all", async (req, res) => {
   }
 })
 
-router.patch("/edit-by-id/:id", async (req, res) => {
+router.patch("/edit-by-id/:id", AuthSDAdmin, async (req, res) => {
   const {id} = req.params
   const {name, role} = req.body
   const data = {

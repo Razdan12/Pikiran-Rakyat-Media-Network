@@ -5,6 +5,7 @@ const {
   getCustomerAll,
   getCountCustomer,
   deleteCustomer,
+  editCustomerRepo,
 } = require("./CustRepo");
 
 const createCustomerServ = async (dataRes) => {
@@ -27,7 +28,8 @@ const createCustomerServ = async (dataRes) => {
 };
 
 const getCustomerServ = async () => {
-  const customer = await getCustomer();
+  let customer = await getCustomer();
+  customer = customer.filter((item) => !item.is_deleted);
   const customerResponse = await Promise.all(
     customer.map(async (item) => {
       const data = {
@@ -50,6 +52,11 @@ const getCustomerByIdServ = async (id) => {
       phone: response.contact_phone,
       address: response.address,
       logo: response.img_logo,
+      email: response.email,
+      npwp: response.npwp,
+      finContact: response.fincontact,
+      finPhone: response.fincontact_phone
+      
     };
     return data;
   } catch (error) {
@@ -59,7 +66,8 @@ const getCustomerByIdServ = async (id) => {
 
 const getAllCust = async (pageNumber, pageSize) => {
   try {
-    const customer = await getCustomerAll(pageNumber, pageSize);
+    let customer = await getCustomerAll(pageNumber, pageSize);
+    customer = customer.filter((item) => !item.is_deleted);
     const count = await getCountCustomer();
     const customerResponse = await Promise.all(
       customer.map(async (item) => {
@@ -99,10 +107,29 @@ const deleteCustomerServ = async (id) => {
   }
 };
 
+const editCustomer = async (id, dataRes) => {
+  const data = {
+    name: dataRes.name,
+    contact: dataRes.contact,
+    contact_phone: dataRes.phone,
+    email: dataRes.email,
+    npwp: dataRes.npwp,
+    address: dataRes.address,
+    fincontact: dataRes.fincontact,
+    fincontact_phone: dataRes.fincontact_phone,
+  }
+
+  const response = await editCustomerRepo(id, data)
+  return response
+
+}
+
+
 module.exports = {
   createCustomerServ,
   getCustomerServ,
   getCustomerByIdServ,
   getAllCust,
   deleteCustomerServ,
+  editCustomer
 };

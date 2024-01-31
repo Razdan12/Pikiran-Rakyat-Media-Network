@@ -8,6 +8,14 @@ const QuotationCustData = async (id) => {
         },
         include: {
             costumer: true,
+            payCash: true,
+            barter: true,
+            semiBarter: true,
+            kredit: true,
+            termin: true,
+            deposit: true,
+            oti: true,
+            OrderMitra: true
         }
     })
 }

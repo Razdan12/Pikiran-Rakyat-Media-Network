@@ -135,17 +135,9 @@ const getRateOtherServ = async () => {
 };
 
 const getAllCpdServ = async () => {
-  let cpdDisplay = await getCpdRepo(false);
-  let cpdOther = await getCpdRepo(true);
-
+  let cpdDisplay = await getCpdRepo();
   cpdDisplay = cpdDisplay.filter((item) => !item.is_deleted);
-  cpdOther = cpdOther.filter((item) => !item.is_deleted);
-
-  const data = {
-    cpdDisplay,
-    cpdOther,
-  };
-  return data;
+  return cpdDisplay;
 };
 
 const getAllCpmServ = async () => {

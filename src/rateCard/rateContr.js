@@ -266,28 +266,6 @@ router.post("/cpd/create/display", async (req, res) => {
     home,
     detail,
     section,
-    customPrice: false,
-    is_other: false,
-  };
-
-  try {
-    const response = await addCPDServ(data);
-    return res.status(200).json(response);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
-  }
-});
-
-router.post("/cpd/create/other", async (req, res) => {
-  const { name, type, size, rate, customPrice } = req.body;
-  const data = {
-    name,
-    type,
-    size,
-    rate,
-    customPrice,
-    is_other: true,
   };
 
   try {

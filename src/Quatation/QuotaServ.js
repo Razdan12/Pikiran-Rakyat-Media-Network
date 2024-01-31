@@ -11,7 +11,9 @@ const QuotaDataList = async (id) => {
         cust_type : quota.costumer.type,
         cust_name : quota.costumer.name,
         pic_name : quota.costumer.fincontact,
-        pic_contact : quota.costumer.fincontact_phone
+        pic_contact : quota.costumer.fincontact_phone,
+        sales_approve: quota.sales_approve,
+        data: quota
     }
 }
 
@@ -31,7 +33,6 @@ const getMediaOrderData = async (pageNumber, pageSize) => {
             })
         )
         
-        console.log(orderResponse);
     return {
         pageNumber : order.pageNumber,
         totalPage: order.totalPage,
