@@ -16,10 +16,12 @@ const {
   GetMitraByIdRepo,
   getCountOrder,
   GetOrderByIdRepo,
+  editOrderRepo,
 } = require("./OrderRepo");
 
 const getRateArtikel = async (Item, mediaTayang) => {
   const artikel = await getartikelByIdServ(Item);
+  console.log({ artikel });
   return mediaTayang === "PRMN" ? artikel.prmn : artikel.mitra;
 };
 
@@ -102,9 +104,9 @@ const createRateCpd = (cpd) => {
   const idCpd = Array.isArray(cpd) ? cpd : [cpd];
   return { create: idCpd.map((idCpd) => ({ idCpd })) };
 };
-const createRateCpm = (cpm) => {
+const createRateCpm = (cpm, impresi) => {
   const idCpm = Array.isArray(cpm) ? cpm : [cpm];
-  return { create: idCpm.map((idCpm) => ({ idCpm })) };
+  return { create: idCpm.map((idCpm) => ({ idCpm, impresi })) };
 };
 
 const createRateOther = (other) => {
@@ -118,6 +120,7 @@ const createOrderMitra = (OrderMitra) => {
 };
 
 const CreateOrderServ = async (dataOrder) => {
+  console.log(dataOrder.opsiMediatayang);
   const customer = await getCustomerByIdServ(dataOrder.idCust);
   const idUser = await getUserByIdRepo(dataOrder.idUser);
   let dataRest = {
@@ -140,13 +143,19 @@ const CreateOrderServ = async (dataOrder) => {
 
   if (customer != "data notfound" || idUser) {
     let totalRate = [];
+    const qtyOrder =
+      (new Date(dataOrder.period_end) - new Date(dataOrder.period_start)) /
+        (24 * 60 * 60 * 1000) +
+      1;
 
     switch (dataOrder.mediaTayang.type) {
       case "artikel":
-        totalRate = await getTotalRate(
+        const total = await getTotalRate(
           dataOrder.rateCard.article,
-          dataOrder.mediaTayang
+          dataOrder.opsiMediatayang
         );
+        totalRate = total;
+        console.log({ total });
         dataRest.rate_article_cust = createRateArticle(
           dataOrder.rateCard.article
         );
@@ -175,7 +184,8 @@ const CreateOrderServ = async (dataOrder) => {
       case "cpm":
         const rateCpm = await getTotalRateCpm(dataOrder.rateCard.cpd);
         totalRate = rateCpm;
-        dataRest.rate_cpm_cust = createRateCpm(dataOrder.rateCard.cpm);
+        const impresi = parseInt(dataOrder.mediaTayang.impresi);
+        dataRest.rate_cpm_cust = createRateCpm(dataOrder.rateCard.cpm, impresi);
         otiData = dataOrder.rateCard.cpm;
         break;
 
@@ -190,10 +200,19 @@ const CreateOrderServ = async (dataOrder) => {
       dataRest.OrderMitra = createOrderMitra(dataOrder.OrderMitra);
     }
 
-
     if (dataOrder.pay_type === "cash") {
       const total = totalRate.reduce((a, b) => a + b, 0);
-      const rateFinal = total - (dataOrder.payment.diskon / 100) * total;
+      const qtyMitra = dataOrder.OrderMitra;
+
+      const jumlah =
+        dataOrder.opsiMediatayang === "PRMN"
+          ? total * qtyOrder
+          : total * qtyMitra.length * qtyOrder;
+
+      const impresi = parseInt(dataOrder.mediaTayang.impresi);
+      const jumlahCpm = (total * qtyMitra.length * impresi) / 1000;
+      const hasil = dataOrder.mediaTayang.type === "cpm" ? jumlahCpm : jumlah;
+      const rateFinal = hasil - (dataOrder.payment.diskon / 100) * hasil;
 
       dataRest.payCash = {
         create: {
@@ -206,7 +225,16 @@ const CreateOrderServ = async (dataOrder) => {
     }
     if (dataOrder.pay_type === "barter") {
       const total = totalRate.reduce((a, b) => a + b, 0);
-      const rateFinal = total - (dataOrder.payment.diskon / 100) * total;
+      const qtyMitra = dataOrder.OrderMitra;
+
+      const jumlah =
+        dataOrder.opsiMediatayang === "PRMN"
+          ? total * qtyOrder
+          : total * qtyMitra.length * qtyOrder;
+      const impresi = parseInt(dataOrder.mediaTayang.impresi);
+      const jumlahCpm = (total * qtyMitra.length * impresi) / 1000;
+      const hasil = dataOrder.mediaTayang.type === "cpm" ? jumlahCpm : jumlah;
+      const rateFinal = hasil - (dataOrder.payment.diskon / 100) * hasil;
       dataRest.barter = {
         create: {
           nilai: parseInt(total),
@@ -219,7 +247,17 @@ const CreateOrderServ = async (dataOrder) => {
     }
     if (dataOrder.pay_type === "semi") {
       const total = totalRate.reduce((a, b) => a + b, 0);
-      const rateFinal = total - (dataOrder.payment.diskon / 100) * total;
+      const qtyMitra = dataOrder.OrderMitra;
+
+      const jumlah =
+        dataOrder.opsiMediatayang === "PRMN"
+          ? total * qtyOrder
+          : total * qtyMitra.length * qtyOrder;
+      const impresi = parseInt(dataOrder.mediaTayang.impresi);
+      const jumlahCpm = (total * qtyMitra.length * impresi) / 1000;
+      const hasil = dataOrder.mediaTayang.type === "cpm" ? jumlahCpm : jumlah;
+      const rateFinal = hasil - (dataOrder.payment.diskon / 100) * hasil;
+      
       dataRest.semiBarter = {
         create: {
           totalRate: total,
@@ -235,7 +273,16 @@ const CreateOrderServ = async (dataOrder) => {
     }
     if (dataOrder.pay_type === "kredit") {
       const total = totalRate.reduce((a, b) => a + b, 0);
-      const rateFinal = total - (dataOrder.payment.diskon / 100) * total;
+      const qtyMitra = dataOrder.OrderMitra;
+
+      const jumlah =
+        dataOrder.opsiMediatayang === "PRMN"
+          ? total * qtyOrder
+          : total * qtyMitra.length * qtyOrder;
+      const impresi = parseInt(dataOrder.mediaTayang.impresi);
+      const jumlahCpm = (total * qtyMitra.length * impresi) / 1000;
+      const hasil = dataOrder.mediaTayang.type === "cpm" ? jumlahCpm : jumlah;
+      const rateFinal = hasil - (dataOrder.payment.diskon / 100) * hasil;
       dataRest.kredit = {
         create: {
           nilaiKredit: parseInt(total),
@@ -247,7 +294,16 @@ const CreateOrderServ = async (dataOrder) => {
     }
     if (dataOrder.pay_type === "termin") {
       const total = totalRate.reduce((a, b) => a + b, 0);
-      const rateFinal = total - (dataOrder.payment.diskon / 100) * total;
+      const qtyMitra = dataOrder.OrderMitra;
+
+      const jumlah =
+        dataOrder.opsiMediatayang === "PRMN"
+          ? total * qtyOrder
+          : total * qtyMitra.length * qtyOrder;
+      const impresi = parseInt(dataOrder.mediaTayang.impresi);
+      const jumlahCpm = (total * qtyMitra.length * impresi) / 1000;
+      const hasil = dataOrder.mediaTayang.type === "cpm" ? jumlahCpm : jumlah;
+      const rateFinal = hasil - (dataOrder.payment.diskon / 100) * hasil;
       dataRest.termin = {
         create: {
           termin_1: parseInt(dataOrder.payment.termin1),
@@ -276,8 +332,6 @@ const CreateOrderServ = async (dataOrder) => {
     return Response(404, "", "customer tidak ditemukan ");
   }
 };
-
-
 
 const CreateMitraServ = async (name, status) => {
   return await CreateMitraRepo(name, status);
@@ -477,7 +531,6 @@ const createOti = async (idOrder, dataProps) => {
 const GetorderByIdServ = async (id) => {
   const order = await GetOrderByIdRepo(id);
 
-
   const mitra = await Promise.all(
     order.OrderMitra.map(async (MitItem) => {
       return await GetMitraByIdRepo(MitItem.idMitra);
@@ -511,10 +564,19 @@ const GetorderByIdServ = async (id) => {
   };
 };
 
+const editOrderServ = async (id, data) => {
+  const dataRes = {
+    sales_approve: data.sales_approve,
+  };
+
+  return await editOrderRepo(id, dataRes);
+};
+
 module.exports = {
   CreateOrderServ,
   CreateMitraServ,
   GetallOrderServ,
   GetorderByIdServ,
   UploadMitra,
+  editOrderServ,
 };

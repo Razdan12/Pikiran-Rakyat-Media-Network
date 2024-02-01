@@ -1,6 +1,11 @@
 const { getCustomerByIdServ } = require("../Cutomer/CustService");
-const { GetOrderByIdRepo } = require("../Order/OrderRepo");
-const { getOtiRepo, countOti } = require("./OtiRepo");
+const { GetOrderByIdRepo, GetMitraByIdRepo } = require("../Order/OrderRepo");
+const {
+  getOtiRepo,
+  countOti,
+  getOtiRepoByUser,
+  getOtiById,
+} = require("./OtiRepo");
 
 const GetOtiServ = async (pageNumber, pageSize) => {
   const otiRest = await getOtiRepo(pageNumber, pageSize);
@@ -84,8 +89,68 @@ const reportServ = async (pageNumber, pageSize) => {
     throw error;
   }
 };
+const reportByUserServ = async (id, pageNumber, pageSize) => {
+  try {
+    const Report = await getOtiRepoByUser(id, pageNumber, pageSize);
+    const report = await Promise.all(
+      Report.map(async (Item) => {
+        const idCust = Item.id_cust;
+        const customer = await getCustomerByIdServ(idCust);
+        const oti = await getOtiByIdServ(Item.oti);
+        const mitra = await Promise.all(
+          Item.OrderMitra.map(async (mitra) => {
+            const mitraRes = await GetMitraByIdRepo(mitra.idMitra);
+            return mitraRes.name
+          })
+        );
+        return {
+          idOrder: Item.id,
+          client: customer.name,
+          campaign: Item.camp_name,
+          tgl_order: new Date(Item.order_date).toLocaleDateString("id-ID", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          noQuo: "no Quo",
+          mitra: mitra.length == 0 ? ['PRMN'] : mitra,
+          media_tayang: oti[0].sub,
+          noMo: Item.no_mo,
+          period_start: new Date(Item.period_start).toLocaleDateString(
+            "id-ID",
+            {
+              month: "long",
+              year: "numeric",
+            }
+          ),
+          period_end: new Date(Item.period_end).toLocaleDateString("id-ID", {
+            month: "long",
+            year: "numeric",
+          }),
+          oti: oti[0].oti,
+          status: new Date(Item.period_end) > new Date() ? true : false,
+        };
+      })
+    );
+    return report;
+  } catch (error) {
+    console.log();
+    throw error;
+  }
+};
+
+const getOtiByIdServ = async (data) => {
+  const Oti = await Promise.all(
+    data.map(async (Item) => {
+      const oti = await getOtiById(Item.id);
+      return oti;
+    })
+  );
+  return Oti;
+};
 
 module.exports = {
   GetOtiServ,
   reportServ,
+  reportByUserServ,
 };

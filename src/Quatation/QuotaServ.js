@@ -3,6 +3,7 @@ const { QuotationCustData } = require("./Quotrepo")
 
 const QuotaDataList = async (id) => {
     const quota = await QuotationCustData(id)
+    
     return {
         camp_name : quota.camp_name,
         camp_type : quota.Sales_type,

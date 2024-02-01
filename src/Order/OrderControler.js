@@ -1,5 +1,5 @@
 const express = require("express");
-const { GetMediaTayangServ, CreateOrderServ,  CreateMitraServ,  GetallOrderServ, GetorderByIdServ, UploadMitra } = require("./OrderService");
+const { GetMediaTayangServ, CreateOrderServ,  CreateMitraServ,  GetallOrderServ, GetorderByIdServ, UploadMitra, editOrderServ } = require("./OrderService");
 const { AuthAll } = require("../config/Auth");
 const multer = require("multer");
 const readXlsxFile = require("read-excel-file/node");
@@ -109,6 +109,22 @@ router.get("/data/:id", AuthAll, async (req, res) => {
   const {id} = req.params
   try {
     const response = await GetorderByIdServ(id)
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+    
+  }
+})
+
+router.patch("/edit-order/:id", AuthAll, async (req, res) => {
+  const {id} = req.params
+  const {sales_approve} = req. body
+  try {
+    const data = {
+      sales_approve
+    }
+    const response = await editOrderServ(id, data)
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);

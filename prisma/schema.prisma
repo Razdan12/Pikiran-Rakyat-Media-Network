@@ -11,13 +11,16 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(cuid())
-  name     String
-  email    String  @unique
-  password String
-  role_id  String
-  role     Role    @relation(fields: [role_id], references: [id])
-  order    Order[]
+  id         String    @id @default(cuid())
+  name       String
+  email      String    @unique
+  password   String
+  role_id    String
+  is_deleted Boolean?
+  role       Role      @relation(fields: [role_id], references: [id])
+  order      Order[]
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 }
 
 model Role {
@@ -140,6 +143,7 @@ model rate_cpd_cust {
 model rate_cpm_cust {
   idOrder String
   idCpm   String
+  impresi Int?
   order   Order?    @relation(fields: [idOrder], references: [id])
   cpm     rate_cpm? @relation(fields: [idCpm], references: [id])
 

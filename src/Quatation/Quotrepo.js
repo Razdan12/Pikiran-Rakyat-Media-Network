@@ -6,6 +6,7 @@ const QuotationCustData = async (id) => {
         where: {
             id
         },
+        
         include: {
             costumer: true,
             payCash: true,

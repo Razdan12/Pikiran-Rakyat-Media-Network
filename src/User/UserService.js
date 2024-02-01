@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { createUserRepo, Login, getAllUserRepo, editUser } = require("./UserRepo");
+const { createUserRepo, Login, getAllUserRepo, editUser, getUserByIdRepo } = require("./UserRepo");
 const { Response } = require("../config/Response");
 const { getRoleByid } = require("../Role/RoleRepo");
 
@@ -60,7 +60,8 @@ const LoginUser = async (email, password) => {
 };
 
 const getAllUserServ = async () => {
-  const user = await getAllUserRepo()
+  let user = await getAllUserRepo()
+  user = user.filter((item) => !item.is_deleted);
   const userRest = await Promise.all(
     user.map(async (item) => {
       const role = await getRoleByid(item.role_id)
@@ -83,4 +84,13 @@ const editUserServ = async (id, data) => {
 
   return await editUser(id, dataRest)
 }
-module.exports = { createUserServ, LoginUser , getAllUserServ, editUserServ};
+const deleteUserServ = async (id) => {
+  const dataRest = {
+   is_deleted : true
+  }
+
+  return await editUser(id, dataRest)
+}
+
+
+module.exports = { createUserServ, LoginUser , getAllUserServ, editUserServ, deleteUserServ};

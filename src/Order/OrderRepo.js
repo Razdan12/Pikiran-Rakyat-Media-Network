@@ -39,6 +39,7 @@ const GetOrderByIdRepo = async (id) => {
     }
   })
 }
+
 const GetAllOrderRepo = async (pageNumber, pageSize) => {
   return await prisma.order.findMany({
     skip: (pageNumber - 1) * pageSize,
@@ -68,6 +69,15 @@ const getCountOrder = async () => {
   return await  prisma.order.count()
 }
 
+const editOrderRepo = async (id, data) => {
+  return prisma.order.update({
+    where: {
+      id
+    },
+    data
+  })
+}
+
 
 module.exports = {
  
@@ -76,6 +86,7 @@ module.exports = {
   GetAllOrderRepo,
   GetMitraByIdRepo,
   getCountOrder,
-  GetOrderByIdRepo
+  GetOrderByIdRepo,
+  editOrderRepo 
  
 };
