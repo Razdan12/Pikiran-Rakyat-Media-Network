@@ -16,9 +16,55 @@ const QuotationCustData = async (id) => {
             termin: true,
             deposit: true,
             oti: true,
-            OrderMitra: true
+            OrderMitra: true,
+            rate_article_cust: true,
+            rate_cpm_cust : true,
+            rate_cpd_cust: true,
+            rate_other_cust: true,
+            rate_sosmed_cust: true
         }
     })
 }
 
-module.exports = {QuotationCustData}
+const editPayCashRepo = async (id, data) => {
+    return await prisma.payCash.update({
+        where: {
+            idOrder: id
+        },
+        data
+    })
+}
+const editPayKreditRepo = async (id, data) => {
+    return await prisma.payKredit.update({
+        where: {
+            idOrder: id
+        },
+        data
+    })
+}
+const editPaySemiRepo = async (id,data) => {
+    return await prisma.paySemiBarter.update({
+        where: {
+            idOrder: id
+        },
+        data
+    })
+}
+const editPayBarterRepo = async (id, data) => {
+    return await prisma.payBarter.update({
+        where: {
+            idOrder: id
+        },
+        data
+    })
+}
+const editPayTerminRepo = async (id, data) => {
+    return await prisma.payTermin.update({
+        where: {
+            idOrder: id
+        },
+        data
+    })
+}
+
+module.exports = {QuotationCustData, editPayCashRepo, editPayKreditRepo, editPaySemiRepo, editPayBarterRepo, editPayTerminRepo}

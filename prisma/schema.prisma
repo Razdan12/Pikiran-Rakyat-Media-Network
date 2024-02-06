@@ -15,7 +15,7 @@ model User {
   name         String
   email        String         @unique
   jabatan      String?
-  phone        Int?
+  phone        String?
   password     String
   role_id      String
   is_deleted   Boolean?
@@ -59,7 +59,7 @@ model Order {
   id_cust           String
   Sales_type        String?
   camp_name         String?
-  order_no          String?
+  order_no          Int?
   order_date        String?
   period_start      DateTime?
   period_end        DateTime?

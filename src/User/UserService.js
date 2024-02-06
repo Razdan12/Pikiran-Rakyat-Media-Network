@@ -22,7 +22,7 @@ const createUserServ = async (data) => {
     email: data.email,
     password: hashPassword,
     jabatan: data.jabatan,
-    phone: parseInt(data.phone),
+    phone: data.phone,
     role_id: data.role_id,
   };
 

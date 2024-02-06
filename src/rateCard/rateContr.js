@@ -288,7 +288,6 @@ router.patch("/cpd/edit-by-id/:id", async (req, res) => {
     home,
     section,
     detail,
-    rate,
     customPrice,
   };
   try {

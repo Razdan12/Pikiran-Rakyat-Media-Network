@@ -1,7 +1,7 @@
 const express = require("express");
 
 const { AuthAll } = require("../config/Auth");
-const { QuotaDataList, getMediaOrderData, getMediaOrderDataByUser } = require("./QuotaServ");
+const { QuotaDataList, getMediaOrderData, getMediaOrderDataByUser, addCashBackIntensive } = require("./QuotaServ");
 
 const router = express.Router();
 
@@ -39,5 +39,21 @@ router.get("/mo/by-user/:id", async (req, res) => {
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 });
+
+router.patch("/mo/update-cash-intensive/:id", async (req, res) => {
+  try {
+    const {id} = req.params
+    const data = {
+      cashBack : req.body.cashBack,
+      intensive : req.body.intensive
+    }
+    
+    const response = await addCashBackIntensive(id, data)
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
 
 module.exports = router;

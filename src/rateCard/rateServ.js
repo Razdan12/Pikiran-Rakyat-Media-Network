@@ -219,7 +219,6 @@ const editCpdServ = async (id, data) => {
     rate_home: data.home,
     rate_section: data.section,
     rate_detail: data.detail,
-    rate: data.rate,
     is_custom_price: data.customPrice,
   };
   return await editCpdRepo(id, cpd);

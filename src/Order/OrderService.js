@@ -24,7 +24,6 @@ const {
 
 const getRateArtikel = async (Item, mediaTayang) => {
   const artikel = await getartikelByIdServ(Item);
-  console.log({ artikel });
   return mediaTayang === "PRMN" ? artikel.prmn : artikel.mitra;
 };
 
@@ -66,6 +65,7 @@ const getTotalRate = async (article, mediaTayang) => {
     return [await getRateArtikel(article, mediaTayang)];
   }
 };
+
 const getTotalRateSosmed = async (id, data) => {
   if (Array.isArray(id)) {
     const rate = await Promise.all(id.map((Item) => getRateSosmed(Item, data)));
