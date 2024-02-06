@@ -36,7 +36,7 @@ router.get("/auth/me", async (req, res) => {
 
 
 router.post("/register", async (req, res) => {
-  const { name, email, password, repassword, role_id } = req.body;
+  const { name, email, password, repassword, role_id , jabatan, phone} = req.body;
 
   if (password !== repassword) {
     return res.status(400).json({ message: "Password tidak sama" });
@@ -48,6 +48,9 @@ router.post("/register", async (req, res) => {
       email,
       password,
       role_id,
+      jabatan,
+      phone
+
     };
 
     const response = await createUserServ(data);

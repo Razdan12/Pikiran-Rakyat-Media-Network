@@ -30,13 +30,33 @@ const getOtiRepo = async (pageNumber, pageSize) => {
            },
     })
 }
+
 const getOtiRepoByUser = async (id, pageNumber, pageSize) => {
     return await prisma.order.findMany({
         where: {
             id_user: id
         },
-        skip: (pageNumber - 1) * pageSize,
-        take: pageSize,
+        // skip: (pageNumber - 1) * pageSize,
+        // take: pageSize,
+        include: {
+            oti: true,
+            OrderMitra: true
+        },
+        orderBy: {
+            created_At: "desc",
+           },
+    })
+}
+
+
+
+const getOtiRepoByProduk = async (produk, pageNumber, pageSize) => {
+    return await prisma.order.findMany({
+        where: {
+            rate_type:produk
+        },
+        // skip: (pageNumber - 1) * pageSize,
+        // take: pageSize,
         include: {
             oti: true,
             OrderMitra: true
@@ -51,12 +71,23 @@ const contAllOti = async () => {
     return await prisma.orderTayangIklan.count()
 }
 
-
+const editOtiRepo = async (id, data) => {
+    return await prisma.orderTayangIklan.update({
+        where:{
+            id
+        },
+        data
+    })
+}
 module.exports = {
     createOtiRepo,
     countOti,
     getOtiRepo,
     contAllOti,
     getOtiRepoByUser,
-    getOtiById
+    getOtiById,
+    getOtiRepoByProduk,
+   
+    editOtiRepo,
+   
 }

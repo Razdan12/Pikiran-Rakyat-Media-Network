@@ -11,16 +11,19 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(cuid())
-  name       String
-  email      String    @unique
-  password   String
-  role_id    String
-  is_deleted Boolean?
-  role       Role      @relation(fields: [role_id], references: [id])
-  order      Order[]
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
+  id           String         @id @default(cuid())
+  name         String
+  email        String         @unique
+  jabatan      String?
+  phone        Int?
+  password     String
+  role_id      String
+  is_deleted   Boolean?
+  role         Role           @relation(fields: [role_id], references: [id])
+  order        Order[]
+  createdAt    DateTime?      @default(now())
+  updatedAt    DateTime?      @updatedAt
+ 
 }
 
 model Role {
@@ -66,6 +69,15 @@ model Order {
   media_tayang      String?
   rate_type         String?
   sales_approve     Boolean?
+  manager_approve   Boolean?
+  pic_approve       Boolean?
+  request_by        String?
+  approve_by_name   String?
+  date_approve_1    DateTime?
+  confirm_by        String?
+  date_confirm      DateTime?
+  knowledge_by      String?
+  date_knowledge    DateTime?
   created_At        DateTime?           @default(now())
   updated_At        DateTime?           @updatedAt
   costumer          Custs               @relation(fields: [id_cust], references: [id])
@@ -156,6 +168,8 @@ model payCash {
   total      Int
   tempo      DateTime
   diskon     Float?
+  cash_back  Float?
+  intensive  Float?
   finalPrice Int?
 
   @@id([idOrder])
@@ -168,6 +182,8 @@ model payBarter {
   barang     String?
   tempo      DateTime?
   diskon     Float?
+  cash_back  Float?
+  intensive  Float?
   finalPrice Int?
 
   @@id([idOrder])
@@ -184,6 +200,8 @@ model paySemiBarter {
   totalRate   Int
   finalRate   Int
   diskon      Float?
+  cash_back   Float?
+  intensive   Float?
 
   @@id([idOrder])
 }
@@ -195,6 +213,8 @@ model payKredit {
   tempo       DateTime
   diskon      Float?
   finalRate   Int
+  cash_back   Float?
+  intensive   Float?
 
   @@id([idOrder])
 }
@@ -210,6 +230,8 @@ model payTermin {
   tempo_3   DateTime
   diskon    Float?
   finalRate Int
+  cash_back Float?
+  intensive Float?
 
   @@id([idOrder])
 }
@@ -220,19 +242,24 @@ model payDeposit {
   totalDeposit Int
   minDeposit   Int
   status       String
+  cash_back    Float?
+  intensive    Float?
 
   @@id([idOrder])
 }
 
 model OrderTayangIklan {
-  id        String    @id @default(cuid())
-  idOrder   String
-  product   String?
-  sub       String?
-  oti       String?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  order     Order?    @relation(fields: [idOrder], references: [id])
+  id           String         @id @default(cuid())
+  idOrder      String
+  product      String?
+  sub          String?
+  oti          String?
+  tayang       Boolean?
+  bukti_tayang String?
+  createdAt    DateTime?      @default(now())
+  updatedAt    DateTime?      @updatedAt
+  order        Order?         @relation(fields: [idOrder], references: [id])
+ 
 }
 
 model rate_article {

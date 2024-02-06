@@ -17,6 +17,9 @@ const {
   getCountOrder,
   GetOrderByIdRepo,
   editOrderRepo,
+  GetAllOrderByUserRepo,
+  getCountByUserOrder,
+  getOrderByProdukRepo,
 } = require("./OrderRepo");
 
 const getRateArtikel = async (Item, mediaTayang) => {
@@ -104,6 +107,7 @@ const createRateCpd = (cpd) => {
   const idCpd = Array.isArray(cpd) ? cpd : [cpd];
   return { create: idCpd.map((idCpd) => ({ idCpd })) };
 };
+
 const createRateCpm = (cpm, impresi) => {
   const idCpm = Array.isArray(cpm) ? cpm : [cpm];
   return { create: idCpm.map((idCpm) => ({ idCpm, impresi })) };
@@ -120,23 +124,26 @@ const createOrderMitra = (OrderMitra) => {
 };
 
 const CreateOrderServ = async (dataOrder) => {
-  console.log(dataOrder.opsiMediatayang);
   const customer = await getCustomerByIdServ(dataOrder.idCust);
   const idUser = await getUserByIdRepo(dataOrder.idUser);
+  const totalDataOrder = await getCountOrder();
   let dataRest = {
     id_cust: dataOrder.idCust,
     Sales_type: dataOrder.SalesType,
     camp_name: dataOrder.camp_name,
-    order_no: dataOrder.order_no,
+    order_no: totalDataOrder,
     order_date: dataOrder.order_date,
     period_start: dataOrder.period_start,
     period_end: dataOrder.period_end,
     pay_type: dataOrder.pay_type,
     id_user: idUser.id,
-    media_tayang: dataOrder.opsiMediaTayang,
-    rate_type: dataOrder.typeRate,
+    media_tayang: dataOrder.opsiMediatayang,
+    rate_type: dataOrder.mediaTayang.type,
+    request_by: dataOrder.request_by,
     sales_approve: false,
-    no_mo: "1/A01/291/OTI-CRW/XII/2023",
+    manager_approve: false,
+    pic_approve: false,
+    no_mo: `MO - ${totalDataOrder}`,
   };
 
   let otiData = null;
@@ -447,6 +454,10 @@ const GetallOrderServ = async (pageNumber, pageSize) => {
         },
         mediaType: item.media_tayang,
         mediaTayang: mitra,
+        approve1: item.sales_approve,
+        approve2: item.manager_approve,
+        approve3: item.pic_approve,
+        no_mo: item.no_mo,
         payment: {
           ...(item.payCash.length ? { cash: item.payCash } : {}),
           ...(item.barter.length ? { barter: item.barter } : {}),
@@ -456,6 +467,263 @@ const GetallOrderServ = async (pageNumber, pageSize) => {
           ...(item.deposit.length ? { deposit: item.deposit } : {}),
         },
         produk: produk,
+      };
+    })
+  );
+
+  const data = {
+    totalPage: Math.ceil(totalDataOrder / pageSize),
+    pageNumber: pageNumber,
+    totalData: order.length,
+    dataOrder: orderResponse,
+  };
+
+  return data;
+};
+
+const GetallOrderByProdukServ = async (produk, pageNumber, pageSize) => {
+  const order = await getOrderByProdukRepo(produk, pageNumber, pageSize);
+  const totalDataOrder = await getCountOrder();
+
+  const orderResponse = await Promise.all(
+    order.map(async (item) => {
+      const mitra = await Promise.all(
+        item.OrderMitra.map(async (MitItem) => {
+          const mitra = await GetMitraByIdRepo(MitItem.idMitra);
+          const data = {
+            id: mitra.id,
+            nama: mitra.name,
+          };
+          return data;
+        })
+      );
+
+      let produk = [];
+      if (item.rate_article_cust.length) {
+        await Promise.all(
+          item.rate_article_cust.map(async (item) => {
+            const artikelData = await getartikelByIdServ(item.idArtikel);
+            const dataRest = {
+              name: artikelData.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_sosmed_cust.length) {
+        await Promise.all(
+          item.rate_sosmed_cust.map(async (item) => {
+            const Data = await getSosmedByIdServ(item.idSosmed);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_other_cust.length) {
+        await Promise.all(
+          item.rate_other_cust.map(async (item) => {
+            const Data = await getOtherByIdServ(item.idOther);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_cpd_cust.length) {
+        await Promise.all(
+          item.rate_cpd_cust.map(async (item) => {
+            const Data = await getCpdByIdServ(item.idCpd);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_cpm_cust.length) {
+        await Promise.all(
+          item.rate_cpm_cust.map(async (item) => {
+            const Data = await getCpmByIdServ(item.idCpm);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+
+      return {
+        idOrder: item.id,
+        SalesType: item.Sales_type,
+        camp_name: item.camp_name,
+        order_no: item.order_no,
+        order_date: new Date(item.order_date).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        period_start: new Date(item.period_start).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        period_end: new Date(item.period_end).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        pay_type: item.pay_type,
+        customer: {
+          id: item.costumer.id,
+          name: item.costumer.name,
+        },
+        mediaType: item.media_tayang,
+        mediaTayang: mitra,
+        approve1: item.sales_approve,
+        approve2: item.manager_approve,
+        approve3: item.pic_approve,
+        payment: {
+          ...(item.payCash.length ? { cash: item.payCash } : {}),
+          ...(item.barter.length ? { barter: item.barter } : {}),
+          ...(item.kredit.length ? { kredit: item.kredit } : {}),
+          ...(item.semiBarter.length ? { semi_barter: item.semiBarter } : {}),
+          ...(item.termin.length ? { termin: item.termin } : {}),
+          ...(item.deposit.length ? { deposit: item.deposit } : {}),
+        },
+        produk: produk,
+      };
+    })
+  );
+
+  const data = {
+    totalPage: Math.ceil(totalDataOrder / pageSize),
+    pageNumber: pageNumber,
+    totalData: order.length,
+    dataOrder: orderResponse,
+  };
+
+  return data;
+};
+
+const GetallOrderByUserServ = async (id, pageNumber, pageSize) => {
+  const order = await GetAllOrderByUserRepo(id, pageNumber, pageSize);
+ 
+  const totalDataOrder = await getCountByUserOrder(id);
+
+  const orderResponse = await Promise.all(
+    order.map(async (item) => {
+      const mitra = await Promise.all(
+        item.OrderMitra.map(async (MitItem) => {
+          const mitra = await GetMitraByIdRepo(MitItem.idMitra);
+          const data = {
+            id: mitra.id,
+            nama: mitra.name,
+          };
+          return data;
+        })
+      );
+
+      let produk = [];
+      if (item.rate_article_cust.length) {
+        await Promise.all(
+          item.rate_article_cust.map(async (item) => {
+            const artikelData = await getartikelByIdServ(item.idArtikel);
+            const dataRest = {
+              name: artikelData.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_sosmed_cust.length) {
+        await Promise.all(
+          item.rate_sosmed_cust.map(async (item) => {
+            const Data = await getSosmedByIdServ(item.idSosmed);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_other_cust.length) {
+        await Promise.all(
+          item.rate_other_cust.map(async (item) => {
+            const Data = await getOtherByIdServ(item.idOther);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_cpd_cust.length) {
+        await Promise.all(
+          item.rate_cpd_cust.map(async (item) => {
+            const Data = await getCpdByIdServ(item.idCpd);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+      if (item.rate_cpm_cust.length) {
+        await Promise.all(
+          item.rate_cpm_cust.map(async (item) => {
+            const Data = await getCpmByIdServ(item.idCpm);
+            const dataRest = {
+              name: Data.name,
+            };
+            produk.push(dataRest);
+          })
+        );
+      }
+
+      return {
+        idOrder: item.id,
+        SalesType: item.Sales_type,
+        camp_name: item.camp_name,
+        order_no: item.order_no,
+        approve1: item.sales_approve,
+        approve2: item.manager_approve,
+        approve3: item.pic_approve,
+        order_date: new Date(item.order_date).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        period_start: new Date(item.period_start).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        period_end: new Date(item.period_end).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        pay_type: item.pay_type,
+        customer: {
+          id: item.costumer.id,
+          name: item.costumer.name,
+        },
+        mediaType: item.media_tayang,
+        mediaTayang: mitra,
+        payment: {
+          ...(item.payCash.length ? { cash: item.payCash } : {}),
+          ...(item.barter.length ? { barter: item.barter } : {}),
+          ...(item.kredit.length ? { kredit: item.kredit } : {}),
+          ...(item.semiBarter.length ? { semi_barter: item.semiBarter } : {}),
+          ...(item.termin.length ? { termin: item.termin } : {}),
+          ...(item.deposit.length ? { deposit: item.deposit } : {}),
+        },
+        produk: produk,
+        no_mo: item.no_mo
+       
       };
     })
   );
@@ -522,6 +790,7 @@ const createOti = async (idOrder, dataProps) => {
         product: dataProps.type,
         sub: data.name,
         oti: `${formattedCount}/MS03/291/OTI-CRW/${month}/${year}`,
+        tayang: false
       };
       await createOtiRepo(dataRest);
     })
@@ -565,10 +834,15 @@ const GetorderByIdServ = async (id) => {
 };
 
 const editOrderServ = async (id, data) => {
+  const order = GetOrderByIdRepo(id)
+
   const dataRes = {
     sales_approve: data.sales_approve,
+    manager_approve: data.manager_approve,
+    pic_approve: data.pic_approve
   };
 
+ 
   return await editOrderRepo(id, dataRes);
 };
 
@@ -579,4 +853,6 @@ module.exports = {
   GetorderByIdServ,
   UploadMitra,
   editOrderServ,
+  GetallOrderByUserServ,
+  GetallOrderByProdukServ
 };

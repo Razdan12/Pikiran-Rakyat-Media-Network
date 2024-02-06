@@ -1,5 +1,5 @@
 const express = require("express");
-const { GetMediaTayangServ, CreateOrderServ,  CreateMitraServ,  GetallOrderServ, GetorderByIdServ, UploadMitra, editOrderServ } = require("./OrderService");
+const { GetMediaTayangServ, CreateOrderServ,  CreateMitraServ,  GetallOrderServ, GetorderByIdServ, UploadMitra, editOrderServ, GetallOrderByUserServ, GetallOrderByProdukServ } = require("./OrderService");
 const { AuthAll } = require("../config/Auth");
 const multer = require("multer");
 const readXlsxFile = require("read-excel-file/node");
@@ -23,7 +23,6 @@ router.post("/new",  async (req, res) => {
     idUser,
     SalesType,
     camp_name,
-    order_no,
     order_date,
     period_start,
     period_end,
@@ -33,7 +32,8 @@ router.post("/new",  async (req, res) => {
     opsiMediatayang,
     rateCard,
     payment,
-    mediaTayang
+    mediaTayang,
+    request_by
     
   } = req.body;
 
@@ -42,7 +42,6 @@ router.post("/new",  async (req, res) => {
     idUser,
     SalesType: SalesType,
     camp_name: camp_name,
-    order_no: order_no,
     order_date: order_date,
     period_start: period_start,
     period_end: period_end,
@@ -52,10 +51,10 @@ router.post("/new",  async (req, res) => {
     rateCard,
     payment,
     opsiMediatayang,
-    mediaTayang
+    mediaTayang,
+    request_by
   };
 
-  console.log('diskon', payment.diskon);
   try {
     const response = await CreateOrderServ(data);
     return res.status(response.status).json(response);
@@ -105,6 +104,32 @@ router.get("/data", AuthAll, async (req, res) => {
   }
 });
 
+router.get("/by-produk/:produk", AuthAll, async (req, res) => {
+  try {
+    const {produk} =req.params
+    const pageNumber = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const response = await GetallOrderByProdukServ(produk, pageNumber, pageSize);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
+
+router.get("/data/by-user/:id", AuthAll, async (req, res) => {
+  try {
+    const {id} = req.params
+    const pageNumber = parseInt(req.query.pageNumber) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const response = await GetallOrderByUserServ(id, pageNumber, pageSize);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+});
+
 router.get("/data/:id", AuthAll, async (req, res) => {
   const {id} = req.params
   try {
@@ -119,10 +144,12 @@ router.get("/data/:id", AuthAll, async (req, res) => {
 
 router.patch("/edit-order/:id", AuthAll, async (req, res) => {
   const {id} = req.params
-  const {sales_approve} = req. body
+  const {sales_approve, manager_approve, pic_approve} = req. body
   try {
     const data = {
-      sales_approve
+      sales_approve,
+      manager_approve,
+      pic_approve
     }
     const response = await editOrderServ(id, data)
     return res.status(200).json(response);
