@@ -1,6 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const { createUserServ, LoginUser, getAllUserServ, editUserServ, deleteUserServ, cekLogin } = require("./UserService");
+const { createUserServ, LoginUser, getAllUserServ, editUserServ, deleteUserServ, cekLogin, ResetPasswordUserServ } = require("./UserService");
 const { AuthSDAdmin } = require("../config/Auth");
 const dotenv = require("dotenv");
 
@@ -103,6 +103,20 @@ router.patch("/edit-by-id/:id", AuthSDAdmin, async (req, res) => {
     return res.status(500).json({ message: "Terjadi kesalahan pada server" });
   }
 })
+router.patch("/reset-password-user/:id", AuthSDAdmin, async (req, res) => {
+  const {id} = req.params
+  const {password} = req.body
+
+ 
+  try {
+    const response = await ResetPasswordUserServ(id, password)
+    return res.status(201).json(response.data);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Terjadi kesalahan pada server" });
+  }
+})
+
 router.delete("/delete-user/:id", AuthSDAdmin, async (req, res) => {
   const {id} = req.params
  

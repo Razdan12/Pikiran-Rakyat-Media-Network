@@ -38,6 +38,17 @@ const createUserServ = async (data) => {
   }
 };
 
+const ResetPasswordUserServ = async (id, password) => {
+  console.log(password);
+  const hashPassword = await bcrypt.hash(password, 10);
+  const dataRest = {
+    password : hashPassword
+  };
+  console.log(id, dataRest);
+
+  return await editUser(id, dataRest);
+};
+
 const LoginUser = async (email, password) => {
   const user = await Login(email);
 
@@ -106,4 +117,5 @@ module.exports = {
   getAllUserServ,
   editUserServ,
   deleteUserServ,
+  ResetPasswordUserServ
 };

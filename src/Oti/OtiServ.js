@@ -10,8 +10,19 @@ const {
   editOtiRepo,
 } = require("./OtiRepo");
 
-const GetOtiServ = async (pageNumber, pageSize) => {
-  const otiRest = await getOtiRepo(pageNumber, pageSize);
+const GetOtiServ = async (pageNumber, pageSize, date) => {
+  const from = new Date(date.from);
+    let to = new Date(date.to);
+    to.setDate(to.getDate() + 1);
+
+    const dateRest = {
+      from: from,
+      to: to,
+    };
+
+    
+
+  const otiRest = await getOtiRepo(pageNumber, pageSize,dateRest);
   const oti = await Promise.all(
     otiRest.map(async (Item) => {
       const idCust = Item.order.id_cust;
@@ -37,7 +48,7 @@ const GetOtiServ = async (pageNumber, pageSize) => {
         sub: Item.sub,
         oti: Item.oti,
         tayang: Item.tayang,
-        file_bukti_tayang: Item.bukti_tayang
+        file_bukti_tayang: Item.bukti_tayang,
       };
     })
   );
@@ -51,9 +62,18 @@ const GetOtiServ = async (pageNumber, pageSize) => {
   };
 };
 
-const reportServ = async (pageNumber, pageSize) => {
+const reportServ = async (pageNumber, pageSize, date) => {
   try {
-    const otiRest = await getOtiRepo(pageNumber, pageSize);
+    const from = new Date(date.from);
+    let to = new Date(date.to);
+    to.setDate(to.getDate() + 1);
+
+
+    const dateRest = {
+      from: from,
+      to: to,
+    };
+    const otiRest = await getOtiRepo(pageNumber, pageSize, dateRest);
     const report = await Promise.all(
       otiRest.map(async (Item) => {
         const idCust = Item.order.id_cust;
@@ -95,9 +115,18 @@ const reportServ = async (pageNumber, pageSize) => {
   }
 };
 
-const reportByUserServ = async (id, pageNumber, pageSize) => {
+const reportByUserServ = async (id, pageNumber, pageSize, date) => {
   try {
-    const Report = await getOtiRepoByUser(id, pageNumber, pageSize);
+    const from = new Date(date.from);
+    let to = new Date(date.to);
+    to.setDate(to.getDate() + 1);
+
+    const dateRest = {
+      from: from,
+      to: to,
+    };
+    const Report = await getOtiRepoByUser(id, pageNumber, pageSize, dateRest);
+
     const report = await Promise.all(
       Report.map(async (Item) => {
         const idCust = Item.id_cust;
@@ -138,7 +167,7 @@ const reportByUserServ = async (id, pageNumber, pageSize) => {
           product: oti[0].product,
           sub: oti[0].sub,
           tayang: oti[0].tayang,
-          file_bukti_tayang : oti[0].bukti_tayang
+          file_bukti_tayang: oti[0].bukti_tayang,
         };
       })
     );
@@ -149,16 +178,29 @@ const reportByUserServ = async (id, pageNumber, pageSize) => {
   }
 };
 
-const reportByUserProduk = async (produk, pageNumber, pageSize) => {
+const reportByUserProduk = async (produk, pageNumber, pageSize, date) => {
   try {
-    const Report = await getOtiRepoByProduk(produk, pageNumber, pageSize);
-    console.log(produk);
+    const from = new Date(date.from);
+    let to = new Date(date.to);
+    to.setDate(to.getDate() + 1);
+
+    const dateRest = {
+      from: from,
+      to: to,
+    };
+    const Report = await getOtiRepoByProduk(
+      produk,
+      pageNumber,
+      pageSize,
+      dateRest
+    );
+
     const report = await Promise.all(
       Report.map(async (Item) => {
         const idCust = Item.id_cust;
         const customer = await getCustomerByIdServ(idCust);
         const oti = await getOtiByIdServ(Item.oti);
-       
+
         const mitra = await Promise.all(
           Item.OrderMitra.map(async (mitra) => {
             const mitraRes = await GetMitraByIdRepo(mitra.idMitra);
@@ -196,7 +238,7 @@ const reportByUserProduk = async (produk, pageNumber, pageSize) => {
           sub: oti[0].sub,
           tayang: oti[0].tayang,
           idOti: oti[0].id,
-          file_bukti_tayang : oti[0].bukti_tayang
+          file_bukti_tayang: oti[0].bukti_tayang,
         };
       })
     );
@@ -226,11 +268,10 @@ const uploadButiTayangServ = async (data) => {
   const filename = `${date}_${time}_${data.nama_file}`;
   const dataTayang = {
     tayang: true,
-    bukti_tayang: filename
+    bukti_tayang: filename,
   };
   const tayang = await editOtiRepo(data.idOti, dataTayang);
-  return tayang
- 
+  return tayang;
 };
 
 module.exports = {

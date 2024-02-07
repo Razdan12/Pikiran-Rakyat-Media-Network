@@ -3,7 +3,7 @@ const {
   GetallOrderServ,
   GetallOrderByUserServ,
 } = require("../Order/OrderService");
-const { getartikelByIdServ } = require("../rateCard/rateServ");
+const { getartikelByIdServ, getSosmedByIdServ, getOtherByIdServ, getCpdByIdServ, getCpmByIdServ } = require("../rateCard/rateServ");
 const {
   QuotationCustData,
   editPayCashRepo,
@@ -47,11 +47,11 @@ const QuotaDataList = async (id) => {
     remaks: 'PRMN',
     payment: {
       ...(quota.payCash.length ? { data: quota.payCash[0] } : {}),
-      ...(quota.barter.length ? { data: quota.barter } : {}),
-      ...(quota.kredit.length ? { data: quota.kredit } : {}),
-      ...(quota.semiBarter.length ? { data: quota.semiBarter } : {}),
-      ...(quota.termin.length ? { data: quota.termin } : {}),
-      ...(quota.deposit.length ? { data: quota.deposit } : {}),
+      ...(quota.barter.length ? { data: quota.barter[0] } : {}),
+      ...(quota.kredit.length ? { data: quota.kredit[0] } : {}),
+      ...(quota.semiBarter.length ? { data: quota.semiBarter[0] } : {}),
+      ...(quota.termin.length ? { data: quota.termin[0] } : {}),
+      ...(quota.deposit.length ? { data: quota.deposit[0] } : {}),
     },
 
     
@@ -160,9 +160,89 @@ const addCashBackIntensive = async (id, data) => {
   }
 };
 
+const getModata = async (id) => {
+  const order = await QuotationCustData(id)
+  let produk = []
+  if (order.rate_article_cust.length) {
+    await Promise.all(
+      order.rate_article_cust.map(async (item) => {
+        const artikelData = await getartikelByIdServ(item.idArtikel);
+        const dataRest = {
+          name: artikelData.name,
+        };
+        produk.push(artikelData);
+      })
+    );
+  }
+  if (order.rate_sosmed_cust.length) {
+    await Promise.all(
+      order.rate_sosmed_cust.map(async (item) => {
+        const Data = await getSosmedByIdServ(item.idSosmed);
+        
+        produk.push(Data);
+      })
+    );
+  }
+  if (order.rate_other_cust.length) {
+    await Promise.all(
+      order.rate_other_cust.map(async (item) => {
+        const Data = await getOtherByIdServ(item.idOther);
+        const dataRest = {
+          name: Data.name,
+        };
+        produk.push(dataRest);
+      })
+    );
+  }
+  if (order.rate_cpd_cust.length) {
+    await Promise.all(
+      order.rate_cpd_cust.map(async (item) => {
+        const Data = await getCpdByIdServ(item.idCpd);
+        const dataRest = {
+          name: Data.name,
+        };
+        produk.push(dataRest);
+      })
+    );
+  }
+  if (order.rate_cpm_cust.length) {
+    await Promise.all(
+      order.rate_cpm_cust.map(async (item) => {
+        const Data = await getCpmByIdServ(item.idCpm);
+        const dataRest = {
+          name: Data.name,
+        };
+        produk.push(dataRest);
+      })
+    );
+  }
+
+  const dataRest = {
+    no_mo: order.no_mo,
+    customer: order.costumer,
+    jenis_penjualan : order.Sales_type,
+    user: order.user,
+    produk: order.rate_type,
+    detail_produk : produk,
+    media_tayang: order.media_tayang,
+    payment: {
+      ...(order.payCash.length ? { cash: order.payCash[0] } : {}),
+      ...(order.barter.length ? { barter: order.barter[0] } : {}),
+      ...(order.kredit.length ? { kredit: order.kredit[0] } : {}),
+      ...(order.semiBarter.length ? { semi_barter: order.semiBarter[0] } : {}),
+      ...(order.termin.length ? { termin: order.termin[0] } : {}),
+      ...(order.deposit.length ? { deposit: order.deposit[0] } : {}),
+    },
+    
+
+  }
+
+  return dataRest
+}
 module.exports = {
   QuotaDataList,
   getMediaOrderData,
   getMediaOrderDataByUser,
   addCashBackIntensive,
+  getModata
 };

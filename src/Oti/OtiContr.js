@@ -24,9 +24,13 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
+    const date = {
+      from: req.query.from,
+      to: req.query.to
+    }
     const pageNumber = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
-    const response = await GetOtiServ(pageNumber, pageSize);
+    const response = await GetOtiServ(pageNumber, pageSize, date);
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
@@ -36,9 +40,13 @@ router.get("/", async (req, res) => {
 
 router.get("/report", async (req, res) => {
   try {
+    const date = {
+      from: req.query.from,
+      to: req.query.to
+    }
     const pageNumber = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
-    const response = await reportServ(pageNumber, pageSize)
+    const response = await reportServ(pageNumber, pageSize, date)
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
@@ -49,9 +57,14 @@ router.get("/report", async (req, res) => {
 router.get("/report-user/:id", async (req, res) => {
   try {
     const id = req.params.id
+    const date = {
+      from: req.query.from,
+      to: req.query.to
+    }
+
     const pageNumber = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
-    const response = await reportByUserServ(id, pageNumber, pageSize)
+    const response = await reportByUserServ(id, pageNumber, pageSize, date)
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
@@ -62,9 +75,14 @@ router.get("/report-user/:id", async (req, res) => {
 router.get("/report-produk/:produk", async (req, res) => {
   try {
     const produk = req.params.produk
+    const date = {
+      from: req.query.from,
+      to: req.query.to
+    }
+   
     const pageNumber = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
-    const response = await reportByUserProduk(produk, pageNumber, pageSize)
+    const response = await reportByUserProduk(produk, pageNumber, pageSize, date)
     console.log(response);
     return res.status(200).json(response);
   } catch (error) {

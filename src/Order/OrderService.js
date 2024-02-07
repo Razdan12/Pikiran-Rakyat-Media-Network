@@ -333,6 +333,7 @@ const CreateOrderServ = async (dataOrder) => {
     };
 
     const oti = await createOti(order.id, dataOti);
+    console.log(oti);
 
     return Response(200, order, "sukses");
   } else {
