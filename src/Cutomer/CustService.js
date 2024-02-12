@@ -9,21 +9,20 @@ const {
 } = require("./CustRepo");
 
 const createCustomerServ = async (dataRes) => {
+
   const data = {
-    name: dataRes.name,
+    name: dataRes.name  ,
     type: dataRes.type,
     contact: dataRes.contact,
     contact_phone: dataRes.phone,
     email: dataRes.email,
-    npwp: dataRes.npwp,
-    address: dataRes.address,
-    fincontact: dataRes.fincontact,
-    fincontact_phone: dataRes.fincontact_phone,
-    img_logo: dataRes.logo,
-    img_akta: dataRes.akta,
-    img_nib: dataRes.nib,
-    img_npwp: dataRes.img_npwp,
+    npwp: dataRes.npwp != 'undifinded' ? dataRes.npwp : '' ,
+    address: dataRes.address != 'undifinded' ? dataRes.address : '',
+    fincontact: dataRes.fincontact != 'undifinded' ? dataRes.fincontact: '',
+    fincontact_phone: dataRes.fincontact_phone != 'undifinded' ? dataRes.fincontact_phone : '',
+    is_deleted: false
   };
+ 
   return await createCustomerRepo(data);
 };
 
@@ -74,12 +73,12 @@ const getAllCust = async (pageNumber, pageSize) => {
         return {
           id: item.id,
           custname: item.name,
-          contactName: item.contact,
-          phone: item.contact_phone,
-          email: item.email,
-          address: item.address,
-          finName: item.fincontact,
-          finContact: item.fincontact_phone,
+          contactName: item.contact ? item.contact : '-',
+          phone: item.contact_phone ? item.contact_phone : '-',
+          email: item.email ? item.email : '-',
+          address: item.address ? item.address : '-',
+          finName: item.fincontact ? item.fincontact : '-',
+          finContact: item.fincontact_phone ? item.fincontact_phone : '-',
         };
       })
     );

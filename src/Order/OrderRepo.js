@@ -3,16 +3,20 @@ const prisma = new PrismaClient();
 
 
 const CreateOrderRepo = async (dataOrder) => {
-  try {
-    const order = await prisma.order.create({
-      data: dataOrder,
-    });
+  console.log('jalan');
+  const order = await prisma.order.create({
+    data: dataOrder,
+  });
 
-    return order;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  return order;
+ 
+};
+const CreateProdukRepo = async (dataOrder) => {
+ 
+  const order = await prisma.listProduk.createMany(dataOrder)
+
+  return order;
+ 
 };
 
 const CreateMitraRepo = async (name, status) => {
@@ -57,11 +61,8 @@ const GetAllOrderRepo = async (pageNumber, pageSize) => {
       kredit: true,
       termin: true,
       deposit: true,
-      rate_article_cust : true,
-      rate_sosmed_cust : true,
-      rate_other_cust: true,
-      rate_cpd_cust: true,
-      rate_cpm_cust: true
+      listProduk: true
+    
     },
     orderBy: {
       created_At: "desc"
@@ -85,11 +86,7 @@ const GetAllOrderByUserRepo = async (id, pageNumber, pageSize) => {
       kredit: true,
       termin: true,
       deposit: true,
-      rate_article_cust : true,
-      rate_sosmed_cust : true,
-      rate_other_cust: true,
-      rate_cpd_cust: true,
-      rate_cpm_cust: true
+     listProduk: true
     },
     orderBy: {
       created_At: "desc"
@@ -120,9 +117,6 @@ const editOrderRepo = async (id, data) => {
 
 const getOrderByProdukRepo = async (produk, pageNumber, pageSize) =>{
   return prisma.order.findMany({
-    where: {
-      rate_type: produk
-    },
     skip: (pageNumber - 1) * pageSize,
     take: pageSize,
     include: {
@@ -134,11 +128,7 @@ const getOrderByProdukRepo = async (produk, pageNumber, pageSize) =>{
       kredit: true,
       termin: true,
       deposit: true,
-      rate_article_cust : true,
-      rate_sosmed_cust : true,
-      rate_other_cust: true,
-      rate_cpd_cust: true,
-      rate_cpm_cust: true
+      listProduk: true
     },
     orderBy: {
       created_At: "desc"
@@ -158,6 +148,7 @@ module.exports = {
   editOrderRepo,
   GetAllOrderByUserRepo,
   getCountByUserOrder,
-  getOrderByProdukRepo
+  getOrderByProdukRepo,
+  CreateProdukRepo
  
 };

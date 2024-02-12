@@ -32,7 +32,6 @@ router.post("/new",  async (req, res) => {
     opsiMediatayang,
     rateCard,
     payment,
-    mediaTayang,
     request_by
     
   } = req.body;
@@ -51,7 +50,6 @@ router.post("/new",  async (req, res) => {
     rateCard,
     payment,
     opsiMediatayang,
-    mediaTayang,
     request_by
   };
 

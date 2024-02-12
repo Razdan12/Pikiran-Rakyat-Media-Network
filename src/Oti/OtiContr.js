@@ -83,7 +83,6 @@ router.get("/report-produk/:produk", async (req, res) => {
     const pageNumber = parseInt(req.query.pageNumber) || 1;
     const pageSize = parseInt(req.query.pageSize) || 20;
     const response = await reportByUserProduk(produk, pageNumber, pageSize, date)
-    console.log(response);
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);

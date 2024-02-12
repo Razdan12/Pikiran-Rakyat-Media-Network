@@ -3,7 +3,13 @@ const {
   GetallOrderServ,
   GetallOrderByUserServ,
 } = require("../Order/OrderService");
-const { getartikelByIdServ, getSosmedByIdServ, getOtherByIdServ, getCpdByIdServ, getCpmByIdServ } = require("../rateCard/rateServ");
+const {
+  getartikelByIdServ,
+  getSosmedByIdServ,
+  getOtherByIdServ,
+  getCpdByIdServ,
+  getCpmByIdServ,
+} = require("../rateCard/rateServ");
 const {
   QuotationCustData,
   editPayCashRepo,
@@ -15,12 +21,8 @@ const {
 
 const QuotaDataList = async (id) => {
   const quota = await QuotationCustData(id);
-  const qtyOrder =
-      (new Date(quota.period_end) - new Date(quota.period_start)) /
-        (24 * 60 * 60 * 1000) +
-      1;
- 
-  return {
+
+  let dataRest = {
     camp_name: quota.camp_name,
     camp_type: quota.Sales_type,
     period_start: new Date(quota.period_start).toLocaleDateString("id-ID", {
@@ -40,11 +42,12 @@ const QuotaDataList = async (id) => {
     approve1: quota.sales_approve,
     approve2: quota.manager_approve,
     approve3: quota.pic_approve,
-    request_by: quota.request_by,
-    spot_promo: quota.rate_type,
-    qty: quota.media_tayang === 'PRMN' ? 1 : quota.OrderMitra.length,
-    day: (new Date(quota.period_end) - new Date(quota.period_start)) / (24 * 60 * 60 * 1000) + 1,
-    remaks: 'PRMN',
+    qty: quota.media_tayang === "PRMN" ? 1 : quota.OrderMitra.length,
+    day:
+      (new Date(quota.period_end) - new Date(quota.period_start)) /
+        (24 * 60 * 60 * 1000) +
+      1,
+    remaks: "PRMN",
     payment: {
       ...(quota.payCash.length ? { data: quota.payCash[0] } : {}),
       ...(quota.barter.length ? { data: quota.barter[0] } : {}),
@@ -53,9 +56,20 @@ const QuotaDataList = async (id) => {
       ...(quota.termin.length ? { data: quota.termin[0] } : {}),
       ...(quota.deposit.length ? { data: quota.deposit[0] } : {}),
     },
-
-    
+    data: quota.listProduk
   };
+  // const ResponseRest = await Promise.all(
+  //   quota.listProduk.map(async (item) => {
+  //     console.log(item);
+  //     dataRest.data = {
+  //       request_by: quota.request_by,
+  //       spot_promo: item.kategori,
+  //       promo_type: item.produk,
+  //     };
+  //   })
+  // );
+
+  return dataRest;
 };
 
 const getMediaOrderData = async (pageNumber, pageSize) => {
@@ -161,88 +175,62 @@ const addCashBackIntensive = async (id, data) => {
 };
 
 const getModata = async (id) => {
-  const order = await QuotationCustData(id)
-  let produk = []
-  if (order.rate_article_cust.length) {
-    await Promise.all(
-      order.rate_article_cust.map(async (item) => {
-        const artikelData = await getartikelByIdServ(item.idArtikel);
-        const dataRest = {
-          name: artikelData.name,
-        };
-        produk.push(artikelData);
-      })
-    );
-  }
-  if (order.rate_sosmed_cust.length) {
-    await Promise.all(
-      order.rate_sosmed_cust.map(async (item) => {
-        const Data = await getSosmedByIdServ(item.idSosmed);
-        
-        produk.push(Data);
-      })
-    );
-  }
-  if (order.rate_other_cust.length) {
-    await Promise.all(
-      order.rate_other_cust.map(async (item) => {
-        const Data = await getOtherByIdServ(item.idOther);
-        const dataRest = {
-          name: Data.name,
-        };
-        produk.push(dataRest);
-      })
-    );
-  }
-  if (order.rate_cpd_cust.length) {
-    await Promise.all(
-      order.rate_cpd_cust.map(async (item) => {
-        const Data = await getCpdByIdServ(item.idCpd);
-        const dataRest = {
-          name: Data.name,
-        };
-        produk.push(dataRest);
-      })
-    );
-  }
-  if (order.rate_cpm_cust.length) {
-    await Promise.all(
-      order.rate_cpm_cust.map(async (item) => {
-        const Data = await getCpmByIdServ(item.idCpm);
-        const dataRest = {
-          name: Data.name,
-        };
-        produk.push(dataRest);
-      })
-    );
-  }
+  const order = await QuotationCustData(id);
+
+  const produk = await Promise.all(
+    order.listProduk.map(async (Item) => {
+      const data = {
+        nama: Item.produk,
+      };
+      return data;
+    })
+  );
 
   const dataRest = {
     no_mo: order.no_mo,
     customer: order.costumer,
-    jenis_penjualan : order.Sales_type,
+    jenis_penjualan: order.Sales_type,
     user: order.user,
     produk: order.rate_type,
-    detail_produk : produk,
+    detail_produk: produk,
     media_tayang: order.media_tayang,
+    camp_name: order.camp_name,
+    camp_type: order.Sales_type,
+    period_start: new Date(order.period_start).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
+    period_end: new Date(order.period_end).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
+    type_bayar: order.pay_type,
+    request_by: order.request_by,
+    spot_promo: order.rate_type,
+    qty: order.media_tayang === "PRMN" ? 1 : order.OrderMitra.length,
+    day:
+      (new Date(order.period_end) - new Date(order.period_start)) /
+        (24 * 60 * 60 * 1000) +
+      1,
+    remaks: "PRMN",
     payment: {
-      ...(order.payCash.length ? { cash: order.payCash[0] } : {}),
-      ...(order.barter.length ? { barter: order.barter[0] } : {}),
-      ...(order.kredit.length ? { kredit: order.kredit[0] } : {}),
-      ...(order.semiBarter.length ? { semi_barter: order.semiBarter[0] } : {}),
-      ...(order.termin.length ? { termin: order.termin[0] } : {}),
-      ...(order.deposit.length ? { deposit: order.deposit[0] } : {}),
+      ...(order.payCash.length ? { data: order.payCash[0] } : {}),
+      ...(order.barter.length ? { data: order.barter[0] } : {}),
+      ...(order.kredit.length ? { data: order.kredit[0] } : {}),
+      ...(order.semiBarter.length ? { data: order.semiBarter[0] } : {}),
+      ...(order.termin.length ? { data: order.termin[0] } : {}),
+      ...(order.deposit.length ? { data: order.deposit[0] } : {}),
     },
-    
+  };
 
-  }
-
-  return dataRest
-}
+  return dataRest;
+};
 module.exports = {
   QuotaDataList,
   getMediaOrderData,
   getMediaOrderDataByUser,
   addCashBackIntensive,
-  getModata
+  getModata,
 };

@@ -36,7 +36,6 @@ const getOtiRepo = async (pageNumber, pageSize, date) => {
     },
   });
 };
-
 const getOtiRepoByUser = async (id, pageNumber, pageSize, date) => {
   return await prisma.order.findMany({
     where: {
@@ -59,11 +58,9 @@ const getOtiRepoByUser = async (id, pageNumber, pageSize, date) => {
   });
 };
 
-const getOtiRepoByProduk = async (produk, pageNumber, pageSize, date) => {
-  console.log(date);
+const getOtiRepoByProduk = async ( pageNumber, pageSize, date) => {
   return await prisma.order.findMany({
     where: {
-      rate_type: produk,
       created_At: {
         gte: date.from,
         lt: date.to,
@@ -74,6 +71,7 @@ const getOtiRepoByProduk = async (produk, pageNumber, pageSize, date) => {
     include: {
       oti: true,
       OrderMitra: true,
+      listProduk: true
     },
     orderBy: {
       created_At: "desc",

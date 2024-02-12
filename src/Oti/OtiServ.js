@@ -12,17 +12,15 @@ const {
 
 const GetOtiServ = async (pageNumber, pageSize, date) => {
   const from = new Date(date.from);
-    let to = new Date(date.to);
-    to.setDate(to.getDate() + 1);
+  let to = new Date(date.to);
+  to.setDate(to.getDate() + 1);
 
-    const dateRest = {
-      from: from,
-      to: to,
-    };
+  const dateRest = {
+    from: from,
+    to: to,
+  };
 
-    
-
-  const otiRest = await getOtiRepo(pageNumber, pageSize,dateRest);
+  const otiRest = await getOtiRepo(pageNumber, pageSize, dateRest);
   const oti = await Promise.all(
     otiRest.map(async (Item) => {
       const idCust = Item.order.id_cust;
@@ -67,7 +65,6 @@ const reportServ = async (pageNumber, pageSize, date) => {
     const from = new Date(date.from);
     let to = new Date(date.to);
     to.setDate(to.getDate() + 1);
-
 
     const dateRest = {
       from: from,
@@ -127,51 +124,59 @@ const reportByUserServ = async (id, pageNumber, pageSize, date) => {
     };
     const Report = await getOtiRepoByUser(id, pageNumber, pageSize, dateRest);
 
+    let otiRest = [];
     const report = await Promise.all(
       Report.map(async (Item) => {
         const idCust = Item.id_cust;
         const customer = await getCustomerByIdServ(idCust);
-        const oti = await getOtiByIdServ(Item.oti);
         const mitra = await Promise.all(
           Item.OrderMitra.map(async (mitra) => {
             const mitraRes = await GetMitraByIdRepo(mitra.idMitra);
             return mitraRes.name;
           })
         );
-        return {
-          idOrder: Item.id,
-          client: customer.name,
-          campaign: Item.camp_name,
-          tgl_order: new Date(Item.order_date).toLocaleDateString("id-ID", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          }),
-          noQuo: Item.order_no,
-          mitra: mitra.length == 0 ? ["PRMN"] : mitra,
-          media_tayang: oti[0].sub,
-          noMo: Item.no_mo,
-          period_start: new Date(Item.period_start).toLocaleDateString(
-            "id-ID",
-            {
-              month: "long",
-              year: "numeric",
+        const oti = await getOtiByIdServ(Item.oti);
+        await Promise.all(
+          oti.map(async (Oti) => {
+            const data = {
+              idOrder: Item.id,
+              client: customer.name,
+              campaign: Item.camp_name,
+              tgl_order: new Date(Item.order_date).toLocaleDateString("id-ID", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              }),
+              noQuo: Item.order_no,
+              mitra: mitra.length == 0 ? ["PRMN"] : mitra,
+              media_tayang: oti[0].sub,
+              noMo: Item.no_mo,
+              period_start: new Date(Item.period_start).toLocaleDateString(
+                "id-ID",
+                {
+                  month: "long",
+                  year: "numeric",
+                }
+              ),
+              period_end: new Date(Item.period_end).toLocaleDateString("id-ID", {
+                month: "long",
+                year: "numeric",
+              }),
+              oti: Oti.oti,
+              status: new Date(Item.period_end) > new Date() ? true : false,
+              product: Oti.product,
+              sub: Oti.sub,
+              tayang: Oti.tayang,
+              file_bukti_tayang: Oti.bukti_tayang,
             }
-          ),
-          period_end: new Date(Item.period_end).toLocaleDateString("id-ID", {
-            month: "long",
-            year: "numeric",
-          }),
-          oti: oti[0].oti,
-          status: new Date(Item.period_end) > new Date() ? true : false,
-          product: oti[0].product,
-          sub: oti[0].sub,
-          tayang: oti[0].tayang,
-          file_bukti_tayang: oti[0].bukti_tayang,
-        };
+            otiRest.push(data)
+          })
+        )
+       return otiRest
       })
     );
-    return report;
+    
+    return otiRest;
   } catch (error) {
     console.log();
     throw error;
@@ -188,61 +193,67 @@ const reportByUserProduk = async (produk, pageNumber, pageSize, date) => {
       from: from,
       to: to,
     };
-    const Report = await getOtiRepoByProduk(
-      produk,
+    let Report = await getOtiRepoByProduk(
       pageNumber,
       pageSize,
       dateRest
     );
-
+  
+    let otiRest = [];
     const report = await Promise.all(
       Report.map(async (Item) => {
         const idCust = Item.id_cust;
         const customer = await getCustomerByIdServ(idCust);
-        const oti = await getOtiByIdServ(Item.oti);
-
         const mitra = await Promise.all(
           Item.OrderMitra.map(async (mitra) => {
             const mitraRes = await GetMitraByIdRepo(mitra.idMitra);
             return mitraRes.name;
           })
         );
-        return {
-          idOrder: Item.id,
-
-          client: customer.name,
-          campaign: Item.camp_name,
-          tgl_order: new Date(Item.order_date).toLocaleDateString("id-ID", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          }),
-          noQuo: Item.order_no,
-          mitra: mitra.length == 0 ? ["PRMN"] : mitra,
-          media_tayang: oti[0].sub,
-          noMo: Item.no_mo,
-          period_start: new Date(Item.period_start).toLocaleDateString(
-            "id-ID",
-            {
-              month: "long",
-              year: "numeric",
+        const oti = await getOtiByIdServ(Item.oti);
+        await Promise.all(
+          oti.map(async (Oti) => {
+            const data = {
+              idOrder: Item.id,
+              client: customer.name,
+              campaign: Item.camp_name,
+              tgl_order: new Date(Item.order_date).toLocaleDateString("id-ID", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              }),
+              noQuo: Item.order_no,
+              mitra: mitra.length == 0 ? ["PRMN"] : mitra,
+              media_tayang: oti[0].sub,
+              noMo: Item.no_mo,
+              period_start: new Date(Item.period_start).toLocaleDateString(
+                "id-ID",
+                {
+                  month: "long",
+                  year: "numeric",
+                }
+              ),
+              period_end: new Date(Item.period_end).toLocaleDateString("id-ID", {
+                month: "long",
+                year: "numeric",
+              }),
+              oti: Oti.oti,
+              status: new Date(Item.period_end) > new Date() ? true : false,
+              product: Oti.product,
+              sub: Oti.sub,
+              tayang: Oti.tayang,
+              idOti : Oti.id,
+              file_bukti_tayang: Oti.bukti_tayang,
             }
-          ),
-          period_end: new Date(Item.period_end).toLocaleDateString("id-ID", {
-            month: "long",
-            year: "numeric",
-          }),
-          oti: oti[0].oti,
-          status: new Date(Item.period_end) > new Date() ? true : false,
-          product: oti[0].product,
-          sub: oti[0].sub,
-          tayang: oti[0].tayang,
-          idOti: oti[0].id,
-          file_bukti_tayang: oti[0].bukti_tayang,
-        };
+            otiRest.push(data)
+          })
+        )
+       return otiRest
       })
     );
-    return report;
+     otiRest = otiRest.filter(item => item.product === produk);
+   
+    return otiRest;
   } catch (error) {
     console.log();
     throw error;
@@ -270,6 +281,7 @@ const uploadButiTayangServ = async (data) => {
     tayang: true,
     bukti_tayang: filename,
   };
+  console.log(data.idOti , dataTayang);
   const tayang = await editOtiRepo(data.idOti, dataTayang);
   return tayang;
 };
