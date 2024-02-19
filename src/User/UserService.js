@@ -1,7 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const { createUserRepo, Login, getAllUserRepo, editUser } = require("./UserRepo");
+const {
+  createUserRepo,
+  Login,
+  getAllUserRepo,
+  editUser,
+  getUserByIdRepo,
+} = require("./UserRepo");
 const { Response } = require("../config/Response");
 const { getRoleByid } = require("../Role/RoleRepo");
 
@@ -15,6 +21,8 @@ const createUserServ = async (data) => {
     name: data.name,
     email: data.email,
     password: hashPassword,
+    jabatan: data.jabatan,
+    phone: data.phone,
     role_id: data.role_id,
   };
 
@@ -30,16 +38,27 @@ const createUserServ = async (data) => {
   }
 };
 
+const ResetPasswordUserServ = async (id, password) => {
+  console.log(password);
+  const hashPassword = await bcrypt.hash(password, 10);
+  const dataRest = {
+    password : hashPassword
+  };
+  console.log(id, dataRest);
+
+  return await editUser(id, dataRest);
+};
+
 const LoginUser = async (email, password) => {
   const user = await Login(email);
- 
+
   if (!user) {
-    return Response(404, '' , "email invalid");
+    return Response(404, "", "email invalid");
   }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
-    return Response(404, '' , "password invalid");
+    return Response(404, "", "password invalid");
   }
 
   const token = jwt.sign(
@@ -48,7 +67,7 @@ const LoginUser = async (email, password) => {
     { expiresIn: "1d" }
   );
 
- const data = {
+  const data = {
     name: user.name,
     uuid: user.id,
     role: user.role.role,
@@ -56,31 +75,47 @@ const LoginUser = async (email, password) => {
     role_number: user.role.number_role,
     accessToken: token,
   };
-  return Response(200, data , "email invalid");
+  return Response(200, data, "email invalid");
 };
 
 const getAllUserServ = async () => {
-  const user = await getAllUserRepo()
+  let user = await getAllUserRepo();
+  user = user.filter((item) => !item.is_deleted);
   const userRest = await Promise.all(
     user.map(async (item) => {
-      const role = await getRoleByid(item.role_id)
+      const role = await getRoleByid(item.role_id);
       return {
         id: item.id,
         name: item.name,
         email: item.email,
-        role: role.role
-      }
+        role: role.role,
+      };
     })
-  )
-  return userRest
-}
+  );
+  return userRest;
+};
 
 const editUserServ = async (id, data) => {
   const dataRest = {
     name: data.name,
-    role_id: data.role
-  }
+    role_id: data.role,
+  };
 
-  return await editUser(id, dataRest)
-}
-module.exports = { createUserServ, LoginUser , getAllUserServ, editUserServ};
+  return await editUser(id, dataRest);
+};
+const deleteUserServ = async (id) => {
+  const dataRest = {
+    is_deleted: true,
+  };
+
+  return await editUser(id, dataRest);
+};
+
+module.exports = {
+  createUserServ,
+  LoginUser,
+  getAllUserServ,
+  editUserServ,
+  deleteUserServ,
+  ResetPasswordUserServ
+};

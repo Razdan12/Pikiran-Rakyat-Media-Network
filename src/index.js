@@ -3,6 +3,7 @@ const https = require('https');
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 
 const userController = require('./User/UserControll');
 const RoleController = require('./Role/RoleController');
@@ -12,8 +13,6 @@ const Quota = require('./Quatation/QuotaContr');
 const Oti = require('./Oti/OtiContr');
 const Media = require('./mediaTayang/mediaContr');
 const Rate = require('./rateCard/rateContr')
-
-
 
 const corsOptions = {
   origin: '*',
@@ -39,7 +38,11 @@ app.use('/order', Order);
 app.use('/quotation', Quota);
 app.use('/oti', Oti);
 app.use('/media', Media);
-app.use('/rate-card', Rate )
+app.use('/rate-card', Rate );
+
+app.get('/image/:name', (req, res) => {
+  res.sendFile(path.join(__dirname, '../uploads', req.params.name));
+});
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Endpoint not found' });

@@ -143,6 +143,7 @@ const editCpdRepo = async (id, data) => {
     data
   })
 }
+
 const editCpmRepo = async (id, data) => {
   return prisma.rate_cpm.update({
     where: {
@@ -195,6 +196,7 @@ const deleteCpdRepo = async (id) => {
     }
   })
 }
+
 const deleteCpmRepo = async (id) => {
   return prisma.rate_cpm.update({
     where: {

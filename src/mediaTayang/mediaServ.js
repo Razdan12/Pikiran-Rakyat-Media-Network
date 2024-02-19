@@ -1,9 +1,10 @@
 
-const { getMitraRepo,totalMitra, findMitra, getAllMtraRepo, editMitra, } = require("./mediaRepo");
+const { getMitraRepo,totalMitra, findMitra, getAllMtraRepo, editMitra, deleteMitraRepo, } = require("./mediaRepo");
 
 
 const getMitra = async (pageNumber, pageSize) => {
-    const mitra = await getMitraRepo(pageNumber, pageSize)
+    let mitra = await getMitraRepo(pageNumber, pageSize)
+    mitra = mitra.filter((item) => !item.is_deleted);
     const total = await totalMitra()
     const data = {
         totalPage: Math.ceil(total / pageSize),
@@ -31,11 +32,16 @@ const editMitraServ = async (id, data) => {
     return await editMitra(id, dataRest)
 }
 
+const deleteMitra = async (id)=> {
+    return deleteMitraRepo(id)
+}
+
 module.exports = {
     getMitra,
     findMitraServ,
     getMitraServ,
-    editMitraServ
+    editMitraServ,
+    deleteMitra
   
   };
   

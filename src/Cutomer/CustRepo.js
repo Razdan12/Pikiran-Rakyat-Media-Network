@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const createCustomerRepo = async (dataCust) => {
+  
   return prisma.custs.create({
     data: dataCust,
   });
@@ -24,7 +25,11 @@ const getCustomerByIdRepo = async (id) => {
 } 
 
 const getCountCustomer = async () => {
-  return prisma.custs.count()
+  return prisma.custs.count({
+    where: {
+      is_deleted: false
+    }
+  })
 }
 
 const getCustomerAll = async (pageNumber, pageSize) => {

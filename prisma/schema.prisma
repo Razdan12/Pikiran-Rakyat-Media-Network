@@ -11,13 +11,18 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(cuid())
-  name     String
-  email    String  @unique
-  password String
-  role_id  String
-  role     Role    @relation(fields: [role_id], references: [id])
-  order    Order[]
+  id         String    @id @default(cuid())
+  name       String
+  email      String    @unique
+  jabatan    String?
+  phone      String?
+  password   String
+  role_id    String
+  is_deleted Boolean?
+  role       Role      @relation(fields: [role_id], references: [id])
+  order      Order[]
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 }
 
 model Role {
@@ -49,37 +54,36 @@ model Custs {
 }
 
 model Order {
-  id                String              @id @default(cuid())
-  id_cust           String
-  Sales_type        String?
-  camp_name         String?
-  order_no          String?
-  order_date        String?
-  period_start      DateTime?
-  period_end        DateTime?
-  pay_type          String?
-  no_mo             String?
-  id_user           String
-  media_tayang      String?
-  rate_type         String?
-  sales_approve     Boolean?
-  created_At        DateTime?           @default(now())
-  updated_At        DateTime?           @updatedAt
-  costumer          Custs               @relation(fields: [id_cust], references: [id])
-  user              User                @relation(fields: [id_user], references: [id])
-  OrderMitra        OrderMitra[]
-  payCash           payCash[]
-  barter            payBarter[]
-  semiBarter        paySemiBarter[]
-  kredit            payKredit[]
-  termin            payTermin[]
-  deposit           payDeposit[]
-  oti               OrderTayangIklan[]
-  rate_article_cust rate_article_cust[]
-  rate_sosmed_cust  rate_sosmed_cust[]
-  rate_other_cust   rate_other_cust[]
-  rate_cpd_cust     rate_cpd_cust[]
-  rate_cpm_cust     rate_cpm_cust[]
+  id              String             @id @default(cuid())
+  id_cust         String
+  id_user         String
+  Sales_type      String?
+  camp_name       String?
+  order_no        Int?
+  order_date      String?
+  period_start    DateTime?
+  period_end      DateTime?
+  pay_type        String?
+  no_mo           String?
+  media_tayang    String?
+  rate_type       String?
+  sales_approve   Boolean?
+  manager_approve Boolean?
+  pic_approve     Boolean?
+  request_by      String?
+  created_At      DateTime?          @default(now())
+  updated_At      DateTime?          @updatedAt
+  costumer        Custs              @relation(fields: [id_cust], references: [id])
+  user            User               @relation(fields: [id_user], references: [id])
+  OrderMitra      OrderMitra[]
+  payCash         payCash[]
+  barter          payBarter[]
+  semiBarter      paySemiBarter[]
+  kredit          payKredit[]
+  termin          payTermin[]
+  deposit         payDeposit[]
+  oti             OrderTayangIklan[]
+  listProduk      listProduk[]
 }
 
 model Mitra {
@@ -101,50 +105,15 @@ model OrderMitra {
   @@id([idMitra, idOrder])
 }
 
-model rate_article_cust {
-  idOrder   String
-  idArtikel String
-  order     Order?        @relation(fields: [idOrder], references: [id])
-  artikel   rate_article? @relation(fields: [idArtikel], references: [id])
-
-  @@id([idOrder, idArtikel])
+model listProduk {
+  id      String @id @default(cuid())
+  idOrder String?
+  produk  String?
+  rate    String?
+  kategori String?
+  order   Order?  @relation(fields: [idOrder], references: [id])
 }
 
-model rate_sosmed_cust {
-  idOrder  String
-  idSosmed String
-  order    Order?       @relation(fields: [idOrder], references: [id])
-  sosmed   rate_sosmed? @relation(fields: [idSosmed], references: [id])
-
-  @@id([idOrder, idSosmed])
-}
-
-model rate_other_cust {
-  idOrder String
-  idOther String
-  order   Order?              @relation(fields: [idOrder], references: [id])
-  other   rate_other_content? @relation(fields: [idOther], references: [id])
-
-  @@id([idOrder, idOther])
-}
-
-model rate_cpd_cust {
-  idOrder String
-  idCpd   String
-  order   Order?    @relation(fields: [idOrder], references: [id])
-  cpd     rate_cpd? @relation(fields: [idCpd], references: [id])
-
-  @@id([idOrder, idCpd])
-}
-
-model rate_cpm_cust {
-  idOrder String
-  idCpm   String
-  order   Order?    @relation(fields: [idOrder], references: [id])
-  cpm     rate_cpm? @relation(fields: [idCpm], references: [id])
-
-  @@id([idOrder, idCpm])
-}
 
 model payCash {
   idOrder    String
@@ -152,6 +121,8 @@ model payCash {
   total      Int
   tempo      DateTime
   diskon     Float?
+  cash_back  Float?
+  intensive  Float?
   finalPrice Int?
 
   @@id([idOrder])
@@ -164,6 +135,8 @@ model payBarter {
   barang     String?
   tempo      DateTime?
   diskon     Float?
+  cash_back  Float?
+  intensive  Float?
   finalPrice Int?
 
   @@id([idOrder])
@@ -180,6 +153,8 @@ model paySemiBarter {
   totalRate   Int
   finalRate   Int
   diskon      Float?
+  cash_back   Float?
+  intensive   Float?
 
   @@id([idOrder])
 }
@@ -191,6 +166,8 @@ model payKredit {
   tempo       DateTime
   diskon      Float?
   finalRate   Int
+  cash_back   Float?
+  intensive   Float?
 
   @@id([idOrder])
 }
@@ -206,6 +183,8 @@ model payTermin {
   tempo_3   DateTime
   diskon    Float?
   finalRate Int
+  cash_back Float?
+  intensive Float?
 
   @@id([idOrder])
 }
@@ -216,23 +195,27 @@ model payDeposit {
   totalDeposit Int
   minDeposit   Int
   status       String
+  cash_back    Float?
+  intensive    Float?
 
   @@id([idOrder])
 }
 
 model OrderTayangIklan {
-  id        String    @id @default(cuid())
-  idOrder   String
-  product   String?
-  sub       String?
-  oti       String?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  order     Order?    @relation(fields: [idOrder], references: [id])
+  id           String    @id @default(cuid())
+  idOrder      String
+  product      String?
+  sub          String?
+  oti          String?
+  tayang       Boolean?
+  bukti_tayang String?
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+  order        Order?    @relation(fields: [idOrder], references: [id])
 }
 
 model rate_article {
-  id                    String              @id @default(cuid())
+  id                    String    @id @default(cuid())
   name                  String
   prmn                  Int?
   mitra                 Int?
@@ -240,62 +223,57 @@ model rate_article {
   is_custom_price_mitra Boolean?
   note                  String?
   is_deleted            Boolean?
-  createdAt             DateTime?           @default(now())
-  updatedAt             DateTime?           @updatedAt
-  rate_artikel_cust     rate_article_cust[]
+  createdAt             DateTime? @default(now())
+  updatedAt             DateTime? @updatedAt
 }
 
 model rate_sosmed {
-  id               String             @id @default(cuid())
-  name             String
-  instagram        Int?
-  facebook         Int?
-  rate             Int?
-  type             String?
-  note             String?
-  is_other         Boolean?
-  is_custom_price  Boolean?
-  is_deleted       Boolean?
-  createdAt        DateTime?          @default(now())
-  updatedAt        DateTime?          @updatedAt
-  rate_sosmed_cust rate_sosmed_cust[]
+  id              String    @id @default(cuid())
+  name            String
+  instagram       Int?
+  facebook        Int?
+  rate            Int?
+  type            String?
+  note            String?
+  is_other        Boolean?
+  is_custom_price Boolean?
+  is_deleted      Boolean?
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
 }
 
 model rate_other_content {
-  id              String            @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
   rate            Int?
   note            String?
   is_custom_price Boolean?
   is_deleted      Boolean?
-  createdAt       DateTime?         @default(now())
-  updatedAt       DateTime?         @updatedAt
-  rate_other_cust rate_other_cust[]
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
 }
 
 model rate_cpd {
-  id            String          @id @default(cuid())
-  name          String
-  type          String?
-  size          String?
-  rate_home     Int?
-  rate_detail   Int?
-  rate_section  Int?
-  is_deleted    Boolean?
-  createdAt     DateTime?       @default(now())
-  updatedAt     DateTime?       @updatedAt
-  rate_cpd_cust rate_cpd_cust[]
+  id           String    @id @default(cuid())
+  name         String
+  type         String?
+  size         String?
+  rate_home    Int?
+  rate_detail  Int?
+  rate_section Int?
+  is_deleted   Boolean?
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
 }
 
 model rate_cpm {
-  id              String          @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
   type            String?
   size            String?
   rate            Int?
   is_deleted      Boolean?
   is_custom_price Boolean?
-  createdAt       DateTime?       @default(now())
-  updatedAt       DateTime?       @updatedAt
-  rate_cpm_cust   rate_cpm_cust[]
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
 }
