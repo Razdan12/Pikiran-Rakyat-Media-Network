@@ -151,7 +151,7 @@ model paySemiBarter {
   tempoCash   DateTime
   itemBarang  String
   totalRate   Int
-  finalRate   Int
+  finalPrice   Int
   diskon      Float?
   cash_back   Float?
   intensive   Float?
@@ -165,7 +165,7 @@ model payKredit {
   nilaiKredit Int
   tempo       DateTime
   diskon      Float?
-  finalRate   Int
+  finalPrice   Int
   cash_back   Float?
   intensive   Float?
 
@@ -182,7 +182,7 @@ model payTermin {
   termin_3  Int
   tempo_3   DateTime
   diskon    Float?
-  finalRate Int
+  finalPrice Int
   cash_back Float?
   intensive Float?
 

@@ -28,6 +28,12 @@ const CreateMitraRepo = async (name, status) => {
   });
 };
 
+const EditMitraRepo = async (id, data) => {
+  return await prisma.mitra.update({
+    where: {id},
+    data
+  })
+}
 const GetMitraByIdRepo = async (id) => {
   return prisma.mitra.findUnique({
     where: {
@@ -149,6 +155,7 @@ module.exports = {
   GetAllOrderByUserRepo,
   getCountByUserOrder,
   getOrderByProdukRepo,
-  CreateProdukRepo
+  CreateProdukRepo,
+  EditMitraRepo
  
 };

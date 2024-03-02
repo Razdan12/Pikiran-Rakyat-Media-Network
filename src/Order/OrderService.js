@@ -21,6 +21,7 @@ const {
   getCountByUserOrder,
   getOrderByProdukRepo,
   CreateProdukRepo,
+  EditMitraRepo,
 } = require("./OrderRepo");
 
 const CreateOrderServ = async (dataOrder) => {
@@ -109,12 +110,12 @@ const CreateOrderServ = async (dataOrder) => {
       dataRest.semiBarter = {
         create: {
           totalRate: total,
-          nilaiCash: dataOrder.payment.cash,
+          nilaiCash: dataOrder.payment.cash ? dataOrder.payment.cash : 0,
           nilaiBarter: total - dataOrder.payment.cash,
           tempoBarter: dataOrder.payment.tempoBarter,
           tempoCash: dataOrder.payment.tempoCash,
           diskon: dataOrder.payment.diskon,
-          finalRate: rateFinal,
+          finalPrice: rateFinal,
           itemBarang: dataOrder.payment.barang,
         },
       };
@@ -133,7 +134,7 @@ const CreateOrderServ = async (dataOrder) => {
         create: {
           nilaiKredit: parseInt(total),
           diskon: dataOrder.payment.diskon,
-          finalRate: rateFinal,
+          finalPrice: rateFinal,
           tempo: dataOrder.payment.tempo,
         },
       };
@@ -157,11 +158,12 @@ const CreateOrderServ = async (dataOrder) => {
           termin_3: parseInt(dataOrder.payment.termin3),
           tempo_3: dataOrder.payment.tempo3,
           diskon: dataOrder.payment.diskon,
-          finalRate: rateFinal,
+          finalPrice: rateFinal,
         },
       };
     }
 
+    console.log(dataRest);
     const order = await CreateOrderRepo(dataRest);
 
     const dataProduk = createOrderProduk(dataOrder.rateCard, order.id);
@@ -204,6 +206,17 @@ const createOrderProduk = (data, orderId) => {
 const CreateMitraServ = async (name, status) => {
   return await CreateMitraRepo(name, status);
 };
+
+const EditMitraServ = async (id, data) => {
+  const dataRest = {
+    name: data.name,
+    status: data.status
+  }
+
+  const update = await EditMitraRepo(id, dataRest)
+  console.log(update);
+  return update
+}
 
 const UploadMitra = async (data) => {
   const dataRest = await Promise.all(
@@ -548,4 +561,5 @@ module.exports = {
   editOrderServ,
   GetallOrderByUserServ,
   GetallOrderByProdukServ,
+  EditMitraServ
 };

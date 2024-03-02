@@ -86,7 +86,7 @@ const reportServ = async (pageNumber, pageSize, date) => {
             year: "numeric",
           }),
           noQuo: Order.order_no,
-          mitra: Order.OrderMitra,
+          mitra: Order.OrderMitra ? Order.OrderMitra : ["PRMN"],
           media_tayang: Item.sub,
           noMo: Order.no_mo,
           period_start: new Date(Order.period_start).toLocaleDateString(
