@@ -29,6 +29,7 @@ model Role {
   id          String @id @default(cuid())
   role        String
   number_role Int
+  disc_limit  Float
   user        User[]
 }
 
@@ -60,7 +61,7 @@ model Order {
   Sales_type      String?
   camp_name       String?
   order_no        Int?
-  order_date      DateTime? 
+  order_date      DateTime?
   period_start    DateTime?
   period_end      DateTime?
   pay_type        String?

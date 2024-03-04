@@ -65,11 +65,10 @@ const getCustomerByIdServ = async (id) => {
 
 const getAllCust = async (pageNumber, pageSize) => {
   try {
-    let customer = await getCustomerAll(pageNumber, pageSize);
-    customer = customer.filter((item) => !item.is_deleted);
+    let customer = await getCustomerAll(pageNumber, pageSize, { is_deleted: false });
+    // customer = customer.filter((item) => !item.is_deleted);
     const count = await getCountCustomer();
-    const customerResponse = await Promise.all(
-      customer.map(async (item) => {
+    const customerResponse = customer.map((item) => {
         return {
           id: item.id,
           custname: item.name,
@@ -80,7 +79,7 @@ const getAllCust = async (pageNumber, pageSize) => {
           finName: item.fincontact ? item.fincontact : '-',
           finContact: item.fincontact_phone ? item.fincontact_phone : '-',
         };
-      })
+      }
     );
 
     const data = {

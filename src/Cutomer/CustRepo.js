@@ -32,8 +32,11 @@ const getCountCustomer = async () => {
   })
 }
 
-const getCustomerAll = async (pageNumber, pageSize) => {
+const getCustomerAll = async (pageNumber, pageSize, filter) => {
   return await prisma.custs.findMany({
+    where: {
+      ...(filter && {  })
+    },
     skip: (pageNumber - 1) * pageSize,
     take: pageSize,
     orderBy: {

@@ -7,13 +7,14 @@ const addRole = async (data) => {
   });
 };
 
-const totalRole = async() => {
-    return await prisma.role.count()
+const totalRole = async () => {
+  return await prisma.role.count()
 }
 
 const getAllRole = async () => {
-    return await prisma.role.findMany()
+  return await prisma.role.findMany()
 }
+
 
 const getRoleByid = async (id) => {
   return await prisma.role.findUnique({
@@ -22,4 +23,12 @@ const getRoleByid = async (id) => {
     }
   })
 }
-module.exports = { addRole, totalRole, getAllRole,getRoleByid };
+
+const isRoleExist = async (id) => {
+  return await prisma.role.findUniqueOrThrow({ where: { id } })
+}
+
+const editRole = async (id, data) => {
+  return await prisma.role.update({ where: { id }, data })
+}
+module.exports = { addRole, totalRole, getAllRole, getRoleByid, editRole, isRoleExist };
