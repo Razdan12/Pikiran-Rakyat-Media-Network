@@ -163,7 +163,6 @@ const CreateOrderServ = async (dataOrder) => {
       };
     }
 
-    console.log(dataRest);
     const order = await CreateOrderRepo(dataRest);
 
     const dataProduk = createOrderProduk(dataOrder.rateCard, order.id);
@@ -172,7 +171,7 @@ const CreateOrderServ = async (dataOrder) => {
 
     const dataOti = {
       idOrder: order.id,
-      // type: dataOrder.mediaTayang.type,
+      orderDate: order.order_date,
       data: dataOrder.rateCard,
     };
 
@@ -214,7 +213,7 @@ const EditMitraServ = async (id, data) => {
   }
 
   const update = await EditMitraRepo(id, dataRest)
-  console.log(update);
+
   return update
 }
 
@@ -495,6 +494,7 @@ const createOti = async (idOrder, dataProps) => {
       const dataRest = {
         idOrder: idOrder,
         product: Item.kategori,
+        orderDate: dataProps.orderDate,
         sub: Item.produk,
         oti: `${formattedCount}/MS03/291/OTI-CRW/${month}/${year}`,
         tayang: false,

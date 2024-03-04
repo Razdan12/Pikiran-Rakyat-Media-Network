@@ -35,11 +35,11 @@ const GetOtiServ = async (pageNumber, pageSize, date) => {
         }),
         period_start: new Date(Item.order.period_start).toLocaleDateString(
           "id-ID",
-          { month: "long", year: "numeric" }
+          {day: "2-digit", month: "long", year: "numeric" }
         ),
         period_end: new Date(Item.order.period_end).toLocaleDateString(
           "id-ID",
-          { month: "long", year: "numeric" }
+          {day: "2-digit", month: "long", year: "numeric" }
         ),
         noMo: Item.order.no_mo,
         product: Item.product,
@@ -91,15 +91,9 @@ const reportServ = async (pageNumber, pageSize, date) => {
           noMo: Order.no_mo,
           period_start: new Date(Order.period_start).toLocaleDateString(
             "id-ID",
-            {
-              month: "long",
-              year: "numeric",
-            }
+            {day: "2-digit", month: "long", year: "numeric" }
           ),
-          period_end: new Date(Order.period_end).toLocaleDateString("id-ID", {
-            month: "long",
-            year: "numeric",
-          }),
+          period_end: new Date(Order.period_end).toLocaleDateString("id-ID",  {day: "2-digit", month: "long", year: "numeric" }),
           oti: Item.oti,
           status: new Date(Order.period_end) > new Date() ? true : false,
         };
