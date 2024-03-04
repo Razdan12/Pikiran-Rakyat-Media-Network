@@ -60,7 +60,7 @@ model Order {
   Sales_type      String?
   camp_name       String?
   order_no        Int?
-  order_date      String?
+  order_date      DateTime? 
   period_start    DateTime?
   period_end      DateTime?
   pay_type        String?
@@ -106,14 +106,13 @@ model OrderMitra {
 }
 
 model listProduk {
-  id      String @id @default(cuid())
-  idOrder String?
-  produk  String?
-  rate    String?
+  id       String  @id @default(cuid())
+  idOrder  String?
+  produk   String?
+  rate     String?
   kategori String?
-  order   Order?  @relation(fields: [idOrder], references: [id])
+  order    Order?  @relation(fields: [idOrder], references: [id])
 }
-
 
 model payCash {
   idOrder    String
@@ -151,7 +150,7 @@ model paySemiBarter {
   tempoCash   DateTime
   itemBarang  String
   totalRate   Int
-  finalRate   Int
+  finalPrice  Int
   diskon      Float?
   cash_back   Float?
   intensive   Float?
@@ -165,7 +164,7 @@ model payKredit {
   nilaiKredit Int
   tempo       DateTime
   diskon      Float?
-  finalRate   Int
+  finalPrice  Int
   cash_back   Float?
   intensive   Float?
 
@@ -173,18 +172,18 @@ model payKredit {
 }
 
 model payTermin {
-  idOrder   String
-  order     Order?   @relation(fields: [idOrder], references: [id])
-  termin_1  Int
-  tempo_1   DateTime
-  termin_2  Int
-  tempo_2   DateTime
-  termin_3  Int
-  tempo_3   DateTime
-  diskon    Float?
-  finalRate Int
-  cash_back Float?
-  intensive Float?
+  idOrder    String
+  order      Order?   @relation(fields: [idOrder], references: [id])
+  termin_1   Int
+  tempo_1    DateTime
+  termin_2   Int
+  tempo_2    DateTime
+  termin_3   Int
+  tempo_3    DateTime
+  diskon     Float?
+  finalPrice Int
+  cash_back  Float?
+  intensive  Float?
 
   @@id([idOrder])
 }
@@ -209,6 +208,7 @@ model OrderTayangIklan {
   oti          String?
   tayang       Boolean?
   bukti_tayang String?
+  orderDate    DateTime?
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
   order        Order?    @relation(fields: [idOrder], references: [id])

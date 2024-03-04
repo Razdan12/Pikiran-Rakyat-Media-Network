@@ -42,6 +42,7 @@ const QuotaDataList = async (id) => {
     approve1: quota.sales_approve,
     approve2: quota.manager_approve,
     approve3: quota.pic_approve,
+    request_by: quota.request_by,
     qty: quota.media_tayang === "PRMN" ? 1 : quota.OrderMitra.length,
     day:
       (new Date(quota.period_end) - new Date(quota.period_start)) /
@@ -58,6 +59,7 @@ const QuotaDataList = async (id) => {
     },
     data: quota.listProduk
   };
+  
   // const ResponseRest = await Promise.all(
   //   quota.listProduk.map(async (item) => {
   //     console.log(item);
@@ -191,7 +193,7 @@ const getModata = async (id) => {
     customer: order.costumer,
     jenis_penjualan: order.Sales_type,
     user: order.user,
-    produk: order.rate_type,
+    produk: order.listProduk,
     detail_produk: produk,
     media_tayang: order.media_tayang,
     camp_name: order.camp_name,
@@ -223,6 +225,7 @@ const getModata = async (id) => {
       ...(order.termin.length ? { data: order.termin[0] } : {}),
       ...(order.deposit.length ? { data: order.deposit[0] } : {}),
     },
+    data: order.listProduk
   };
 
   return dataRest;

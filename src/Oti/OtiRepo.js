@@ -21,7 +21,7 @@ const getOtiById = async (id) => {
 const getOtiRepo = async (pageNumber, pageSize, date) => {
   return await prisma.orderTayangIklan.findMany({
     where: {
-      createdAt: {
+      orderDate: {
         gte: date.from,
         lt: date.to,
       },
@@ -37,10 +37,11 @@ const getOtiRepo = async (pageNumber, pageSize, date) => {
   });
 };
 const getOtiRepoByUser = async (id, pageNumber, pageSize, date) => {
+ 
   return await prisma.order.findMany({
     where: {
       id_user: id,
-      created_At: {
+      order_date: {
         gte: date.from,
         lt: date.to,
       },
@@ -61,7 +62,7 @@ const getOtiRepoByUser = async (id, pageNumber, pageSize, date) => {
 const getOtiRepoByProduk = async ( pageNumber, pageSize, date) => {
   return await prisma.order.findMany({
     where: {
-      created_At: {
+      order_date: {
         gte: date.from,
         lt: date.to,
       },
